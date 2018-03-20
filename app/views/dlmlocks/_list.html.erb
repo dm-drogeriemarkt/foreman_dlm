@@ -1,0 +1,45 @@
+<table class="<%= table_css_classes('table-fixed') %>">
+  <thead>
+    <tr>
+      <th><%= sort :name, :as => _("Name") %></th>
+      <th><%= sort :host, :as => _("Owner") %></th>
+      <th><%= sort :type, :as => _("Type") %></th>
+      <th><%= sort :enabled, :as => _("Enabled") %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for lock in @dlmlocks %>
+      <tr class="<%= lock.enabled? ? '' : 'warning' %>">
+        <td>
+          <%= icon_text(dlmlock_status_icon_class(lock),
+                        link_to_if_authorized(lock.name, hash_for_dlmlock_path(:id => lock)),
+                        kind: 'fa',
+                        class: "#{dlmlock_status_icon_color_class(lock)} fa-lg")
+                      %>
+        </td>
+        <td>
+          <% if lock.host.present? %>
+            <%= icon_text('server',
+                          link_to_if_authorized(
+                            lock.host,
+                            hash_for_host_path(:id => lock.host),
+                            :title => lock.host.name
+            ),
+            kind: 'pficon') %>
+          <% end %>
+        </td>
+        <td>
+          <%= lock.humanized_type %>
+        </td>
+        <td>
+          <% if lock.enabled? %>
+            <%= icon_text('toggle-on', 'Enabled', {kind: 'fa', class: 'center text-success fa-lg', title: _('Enabled')}) %>
+          <% else %>
+            <%= icon_text('toggle-off', 'Disabled', {kind: 'fa', class: 'center fa-lg', title: _('Disabled')}) %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= will_paginate_with_info @dlmlocks %>
