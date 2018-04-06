@@ -60,7 +60,7 @@ class DlmlockTest < ActiveSupport::TestCase
     end
 
     test 'records audit change on acquisition by owner' do
-      assert_difference "Audit.where(auditable_type: 'Dlmlock').count" do
+      assert_difference "Audit.where(auditable_type: 'Dlmlock', action: 'update').count" do
         assert dlmlock.acquire!(host1)
       end
       audit_record = dlmlock.audits.last
@@ -69,7 +69,7 @@ class DlmlockTest < ActiveSupport::TestCase
     end
 
     test 'records no audit change on release' do
-      assert_no_difference "Audit.where(auditable_type: 'Dlmlock').count" do
+      assert_no_difference "Audit.where(auditable_type: 'Dlmlock', action: 'update').count" do
         assert dlmlock.release!(host1)
       end
     end
@@ -151,7 +151,7 @@ class DlmlockTest < ActiveSupport::TestCase
     end
 
     test 'records audit change on release by owner' do
-      assert_difference "Audit.where(auditable_type: 'Dlmlock').count" do
+      assert_difference "Audit.where(auditable_type: 'Dlmlock', action: 'update').count" do
         assert dlmlock.release!(host1)
       end
       audit_record = dlmlock.audits.last
@@ -160,7 +160,7 @@ class DlmlockTest < ActiveSupport::TestCase
     end
 
     test 'records no audit change on acquisition by owner' do
-      assert_no_difference "Audit.where(auditable_type: 'Dlmlock').count" do
+      assert_no_difference "Audit.where(auditable_type: 'Dlmlock', action: 'update').count" do
         assert dlmlock.acquire!(host1)
       end
     end
