@@ -8,6 +8,5 @@ class DlmlocksController < ::ApplicationController
     @dlmlocks = resource_base_search_and_page(:host)
   end
 
-  def show
-  end
+  def show; end
 end

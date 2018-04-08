@@ -1,4 +1,4 @@
-object resource = controller.get_resource
+object controller.get_resource
 
 attributes :id
 

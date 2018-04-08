@@ -43,7 +43,7 @@ module ForemanDlm
 
         # add menu entry
         menu :top_menu, :distributed_locks,
-             url_hash: { controller: :'dlmlocks', action: :index },
+             url_hash: { controller: :dlmlocks, action: :index },
              caption: N_('Distributed Locks'),
              parent: :monitor_menu,
              after: :audits
@@ -55,10 +55,8 @@ module ForemanDlm
       begin
         Host::Managed.send(:include, ForemanDlm::HostExtensions)
 
-        if ForemanDlm.with_monitoring?
-          Host::Managed.send(:include, ForemanDlm::HostMonitoringExtensions)
-        end
-      rescue => e
+        Host::Managed.send(:include, ForemanDlm::HostMonitoringExtensions) if ForemanDlm.with_monitoring?
+      rescue StandardError => e
         Rails.logger.warn "ForemanDlm: skipping engine hook (#{e})"
       end
     end
@@ -71,6 +69,9 @@ module ForemanDlm
   end
 
   def self.with_monitoring?
-    (ForemanMonitoring rescue false) ? true : false
+    ForemanMonitoring # rubocop:disable Lint/Void
+    true
+  rescue StandardError
+    false
   end
 end

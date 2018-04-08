@@ -45,7 +45,7 @@ module Api
         process_response @dlmlock.save
       end
 
-      api :PUT, "/dlmlocks/:id/", N_("Update a DLM lock")
+      api :PUT, '/dlmlocks/:id/', N_('Update a DLM lock')
       param :id, String, :required => true, :desc => N_('Id or name of the DLM lock')
       param_group :dlmlock
 
@@ -64,14 +64,14 @@ module Api
       param :id, String, :required => true, :desc => N_('Id or name of the DLM lock')
       error 200, 'Lock acquired successfully.'
       error 412, 'Lock could not be acquired.'
-      description <<-EOS
+      description <<-DOCS
         == Acquire a lock
         This action acquires a lock.
         It fails, if the lock is currently taken by another host.
 
         == Authentication & Host Identification
         The host is authenticated via a client certificate and identified via the CN of that certificate.
-        EOS
+        DOCS
 
       def acquire
         process_lock_response @dlmlock.acquire!(@host)
@@ -82,14 +82,14 @@ module Api
       error 200, 'Lock released successfully.'
       error 412, 'Lock could not be released.'
 
-      description <<-EOS
+      description <<-DOCS
         == Release a lock
          This action releases a lock.
          It fails, if the lock is currently taken by another host.
 
         == Authentication & Host Identification
          The host is authenticated via a client certificate and identified via the CN of that certificate.
-        EOS
+        DOCS
 
       def release
         process_lock_response @dlmlock.release!(@host)
@@ -113,10 +113,10 @@ module Api
 
       def action_permission
         case params[:action]
-          when 'release', 'acquire'
-            :edit
-          else
-            super
+        when 'release', 'acquire'
+          :edit
+        else
+          super
         end
       end
 
@@ -125,9 +125,17 @@ module Api
         unless @host
           logger.info 'Denying access because no host could be detected.'
           if User.current
-            render_error 'access_denied', :status => :forbidden, :locals => { :details => 'You need to authenticate with a valid client cert. The DN has to match a known host.' }
+            render_error 'access_denied',
+                         :status => :forbidden,
+                         :locals => {
+                           :details => 'You need to authenticate with a valid client cert. The DN has to match a known host.'
+                         }
           else
-            render_error 'unauthorized', :status => :unauthorized, :locals => { :user_login => get_client_cert_hostname }
+            render_error 'unauthorized',
+                         :status => :unauthorized,
+                         :locals => {
+                           :user_login => get_client_cert_hostname
+                         }
           end
         end
         true
@@ -148,7 +156,7 @@ module Api
           deny_access
         else
           render_error 'precondition_failed', :status => :precondition_failed, :locals => {
-            :message => 'Precondition failed. Lock is in invalid state for this operation.',
+            :message => 'Precondition failed. Lock is in invalid state for this operation.'
           }
         end
       end

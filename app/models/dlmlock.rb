@@ -28,7 +28,7 @@ class Dlmlock < ActiveRecord::Base
   def locked_by?(host)
     self.host == host
   end
-  alias_method :acquired_by?, :locked_by?
+  alias acquired_by? locked_by?
 
   def disabled?
     !enabled?
@@ -37,7 +37,7 @@ class Dlmlock < ActiveRecord::Base
   def locked?
     host.present?
   end
-  alias_method :taken?, :locked?
+  alias taken? locked?
 
   def humanized_type
     _('Generic Lock')
@@ -54,7 +54,7 @@ class Dlmlock < ActiveRecord::Base
       id: id,
       host_id: [new_host.try(:id), old_host.try(:id)],
       enabled: true
-    ).update_all(changes.merge(updated_at: DateTime.now))
+    ).update_all(changes.merge(updated_at: Time.now.utc))
     if num_updated > 0
       reload
       process_host_change(old_host, new_host, changes)

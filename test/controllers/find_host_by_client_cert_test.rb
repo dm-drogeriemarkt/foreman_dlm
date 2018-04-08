@@ -1,7 +1,7 @@
 require 'test_plugin_helper'
 
 class FindHostByClientCertTest < ActionController::TestCase
-  tests "api/v2/dlmlocks"
+  tests 'api/v2/dlmlocks'
 
   def described_class
     Api::V2::DlmlocksController
@@ -57,7 +57,7 @@ class FindHostByClientCertTest < ActionController::TestCase
 
       test 'certificate with unknown dn denies access' do
         @request.env['HTTPS'] = 'on'
-        @request.env['SSL_CLIENT_S_DN'] = "CN=doesnotexist.example.com,DN=example,DN=com"
+        @request.env['SSL_CLIENT_S_DN'] = 'CN=doesnotexist.example.com,DN=example,DN=com'
         @request.env['SSL_CLIENT_VERIFY'] = 'SUCCESS'
 
         get :index

@@ -3,7 +3,7 @@ module ForemanDlm
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def authorize_host_by_ip(actions, options = {})
+      def authorize_host_by_ip(actions, _options = {})
         skip_before_action :require_login, :only => actions, :raise => false
         skip_before_action :authorize, :only => actions
         skip_before_action :verify_authenticity_token, :only => actions

@@ -65,7 +65,7 @@ class DlmlockTest < ActiveSupport::TestCase
       end
       audit_record = dlmlock.audits.last
       assert_equal 'update', audit_record.action
-      assert_equal({:host_id => host1.id}, audit_record.audited_changes)
+      assert_equal({ :host_id => host1.id }, audit_record.audited_changes)
     end
 
     test 'records no audit change on release' do
@@ -115,7 +115,7 @@ class DlmlockTest < ActiveSupport::TestCase
   end
 
   context 'an acquired DLM lock' do
-   let(:dlmlock) { FactoryBot.create(:dlmlock, :host => host1) }
+    let(:dlmlock) { FactoryBot.create(:dlmlock, :host => host1) }
 
     test 'should be enabled and locked' do
       assert_equal true, dlmlock.enabled?
@@ -156,7 +156,7 @@ class DlmlockTest < ActiveSupport::TestCase
       end
       audit_record = dlmlock.audits.last
       assert_equal 'update', audit_record.action
-      assert_equal({:host_id => nil}, audit_record.audited_changes)
+      assert_equal({ :host_id => nil }, audit_record.audited_changes)
     end
 
     test 'records no audit change on acquisition by owner' do
