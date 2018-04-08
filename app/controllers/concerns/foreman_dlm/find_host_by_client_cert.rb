@@ -3,7 +3,7 @@ module ForemanDlm
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def authorize_host_by_client_cert(actions, options = {})
+      def authorize_host_by_client_cert(actions, _options = {})
         skip_before_action :require_login, :only => actions, :raise => false
         skip_before_action :authorize, :only => actions
         skip_before_action :verify_authenticity_token, :only => actions
@@ -39,8 +39,8 @@ module ForemanDlm
 
       return unless hostname
 
-      host ||= Host::Base.find_by_certname(hostname) ||
-      Host::Base.find_by_name(hostname)
+      host ||= Host::Base.find_by(certname: hostname) ||
+               Host::Base.find_by(name: hostname)
       logger.info { "Found Host #{host} by client cert #{hostname}" } if host
       host
     end
@@ -53,9 +53,9 @@ module ForemanDlm
       end
 
       dn = request.env[Setting[:ssl_client_dn_env]]
-      return unless (dn && dn =~ /CN=([^\s\/,]+)/i)
+      return unless dn && dn =~ /CN=([^\s\/,]+)/i
 
-      hostname = $1.downcase
+      hostname = Regexp.last_match(1).downcase
       logger.debug "Extracted hostname '#{hostname}' from client certificate."
       hostname
     end

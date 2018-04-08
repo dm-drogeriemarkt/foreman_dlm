@@ -5,7 +5,5 @@ FactoryBot = FactoryGirl
 
 # Add plugin to FactoryBot's paths
 FactoryBot.definition_file_paths << File.join(File.dirname(__FILE__), 'factories')
-if ForemanDlm.with_monitoring?
-  FactoryBot.definition_file_paths << "#{ForemanMonitoring::Engine.root}/test/factories"
-end
+FactoryBot.definition_file_paths << "#{ForemanMonitoring::Engine.root}/test/factories" if ForemanDlm.with_monitoring?
 FactoryBot.reload

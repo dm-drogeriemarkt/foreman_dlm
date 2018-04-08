@@ -27,7 +27,7 @@ class HostMonitoringTest < ActiveSupport::TestCase
   end
 
   context 'an acquired DLM lock' do
-   let(:dlmlock) { FactoryBot.create(:dlmlock, :host => host) }
+    let(:dlmlock) { FactoryBot.create(:dlmlock, :host => host) }
 
     test 'removes monitoring dowmtine' do
       monitoring_mock.expects(:del_downtime_host).once
