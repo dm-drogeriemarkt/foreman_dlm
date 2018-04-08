@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - 2.2
+  - 2.3
 gemfile: foreman/Gemfile
 before_install:
   - sudo apt-get -qq update
@@ -24,5 +24,5 @@ env:
     - TESTOPTS=-v
     - FOREMAN_PLUGIN_NAME=foreman_dlm
   matrix:
-    - FOREMAN_CORE_BRANCH=1.15-stable
-    - FOREMAN_CORE_BRANCH=1.16-stable
+    - FOREMAN_CORE_BRANCH=1.17-stable
+    - FOREMAN_CORE_BRANCH=develop
