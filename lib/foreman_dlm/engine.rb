@@ -14,7 +14,7 @@ module ForemanDlm
 
     initializer 'foreman_dlm.register_plugin', :before => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_dlm do
-        requires_foreman '>= 1.15'
+        requires_foreman '>= 1.17'
 
         apipie_documented_controllers ["#{ForemanDlm::Engine.root}/app/controllers/api/v2/*.rb"]
 

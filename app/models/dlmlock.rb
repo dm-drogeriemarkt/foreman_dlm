@@ -1,4 +1,4 @@
-class Dlmlock < ActiveRecord::Base
+class Dlmlock < ApplicationRecord
   include Authorizable
 
   def self.humanize_class_name

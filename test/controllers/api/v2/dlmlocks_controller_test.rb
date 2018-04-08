@@ -25,7 +25,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#create' do
       test 'should create dlmlock' do
         assert_difference('Dlmlock.unscoped.count') do
-          post :create, valid_attrs_with_root
+          post :create, params: valid_attrs_with_root
         end
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
@@ -41,7 +41,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#show' do
       test 'should show individual record with host' do
         dlmlock = FactoryBot.create(:dlmlock, :host => host1)
-        get :show, :id => dlmlock.to_param
+        get :show, params: { :id => dlmlock.to_param }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
         refute_empty body
@@ -53,7 +53,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
 
       test 'should show individual record that is disabled' do
         dlmlock = FactoryBot.create(:dlmlock, :enabled => false)
-        get :show, :id => dlmlock.to_param
+        get :show, params: { :id => dlmlock.to_param }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
         refute_empty body
@@ -65,7 +65,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
 
       test 'should show individual record by name' do
         dlmlock = FactoryBot.create(:dlmlock, :host => host1)
-        get :show, :id => dlmlock.name
+        get :show, params: { :id => dlmlock.name }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
         refute_empty body
@@ -78,7 +78,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
       end
 
       test 'should not find dlmlock with invalid id' do
-        get :show, :id => 9_999_999
+        get :show, params: { :id => 9_999_999 }
         assert_response :not_found
       end
     end
@@ -86,7 +86,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#update' do
       test 'should update dlmlock' do
         dlmlock = FactoryBot.create(:dlmlock)
-        put :update, :id => dlmlock.to_param, :dlmlock => valid_attrs.merge(:host_id => host1.id, :enabled => false)
+        put :update, params: { :id => dlmlock.to_param, :dlmlock => valid_attrs.merge(:host_id => host1.id, :enabled => false) }
         assert_response :success
         dlmlock.reload
         assert_equal valid_attrs['name'], dlmlock.name
@@ -100,7 +100,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
       test 'should destroy dlmlock' do
         dlmlock = FactoryBot.create(:dlmlock)
         assert_difference('Dlmlock.unscoped.count', -1) do
-          delete :destroy, :id => dlmlock.to_param
+          delete :destroy, params: { :id => dlmlock.to_param }
         end
         assert_response :success
         assert_equal 0, Dlmlock.where(:id => dlmlock.id).count
@@ -110,7 +110,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#acquire' do
       test 'should deny access' do
         dlmlock = FactoryBot.create(:dlmlock)
-        put :acquire, :id => dlmlock.to_param
+        put :acquire, params: { :id => dlmlock.to_param }
         assert_response :forbidden
         assert_nil dlmlock.reload.host
       end
@@ -119,7 +119,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#release' do
       test 'should deny access' do
         dlmlock = FactoryBot.create(:dlmlock, :host => host2)
-        delete :release, :id => dlmlock.to_param
+        delete :release, params: { :id => dlmlock.to_param }
         assert_response :forbidden
         assert_equal host2, dlmlock.reload.host
       end
@@ -142,7 +142,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#index' do
       test 'should deny access' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        get :index, :id => dlmlock.to_param
+        get :index, params: { :id => dlmlock.to_param }
         assert_response :unauthorized
       end
     end
@@ -150,7 +150,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#create' do
       test 'should deny access' do
         as_admin { FactoryBot.create(:dlmlock) }
-        post :create, valid_attrs_with_root
+        post :create, params: valid_attrs_with_root
         assert_response :unauthorized
       end
     end
@@ -158,7 +158,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#update' do
       test 'should deny access' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        put :update, :id => dlmlock.to_param, :dlmlock => valid_attrs
+        put :update, params: { :id => dlmlock.to_param, :dlmlock => valid_attrs }
         assert_response :unauthorized
       end
     end
@@ -166,7 +166,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#destroy' do
       test 'should deny access' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        delete :destroy, :id => dlmlock.to_param
+        delete :destroy, params: { :id => dlmlock.to_param }
         assert_response :unauthorized
         assert_equal 1, as_admin { Dlmlock.where(:id => dlmlock.id).count }
       end
@@ -175,7 +175,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#show' do
       test 'should show individual free lock' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        get :show, :id => dlmlock.to_param
+        get :show, params: { :id => dlmlock.to_param }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
         refute_empty body
@@ -188,7 +188,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
 
       test 'should show individual acquired lock by me' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock, :host => host1) }
-        get :show, :id => dlmlock.to_param
+        get :show, params: { :id => dlmlock.to_param }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
         refute_empty body
@@ -204,7 +204,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
 
       test 'should show individual acquired lock by other' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock, :host => host2) }
-        get :show, :id => dlmlock.to_param
+        get :show, params: { :id => dlmlock.to_param }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
         refute_empty body
@@ -222,21 +222,21 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#acquire' do
       test 'should acquire empty dlmlock' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        put :acquire, :id => dlmlock.to_param
+        put :acquire, params: { :id => dlmlock.to_param }
         assert_response :success
         assert_equal host1, as_admin { dlmlock.reload.host }
       end
 
       test 'should acquire own dlmlock' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock, :host => host1) }
-        put :acquire, :id => dlmlock.to_param
+        put :acquire, params: { :id => dlmlock.to_param }
         assert_response :success
         assert_equal host1, as_admin { dlmlock.reload.host }
       end
 
       test 'should not acquire foreign dlmlock' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock, :host => host2) }
-        put :acquire, :id => dlmlock.to_param
+        put :acquire, params: { :id => dlmlock.to_param }
         assert_response :precondition_failed
         assert_equal host2, as_admin { dlmlock.reload.host }
       end
@@ -244,7 +244,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
       test 'should transparently create non-existing dlmlock' do
         lockname = 'Test Lock'
         assert_equal 0, as_admin { Dlmlock.where(:name => lockname).count }
-        put :acquire, :id => lockname
+        put :acquire, params: { :id => lockname }
         assert_response :success
         dlmlock = as_admin { Dlmlock.find_by(:name => lockname) }
         assert_equal lockname, dlmlock.name
@@ -255,21 +255,21 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#release' do
       test 'should release empty dlmlock' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        delete :release, :id => dlmlock.to_param
+        delete :release, params: { :id => dlmlock.to_param }
         assert_response :success
         assert_nil as_admin { dlmlock.reload.host }
       end
 
       test 'should release own dlmlock' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock, :host => host1) }
-        delete :release, :id => dlmlock.to_param
+        delete :release, params: { :id => dlmlock.to_param }
         assert_response :success
         assert_nil as_admin { dlmlock.reload.host }
       end
 
       test 'should not acquire foreign dlmlock' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock, :host => host2) }
-        delete :release, :id => dlmlock.to_param
+        delete :release, params: { :id => dlmlock.to_param }
         assert_response :precondition_failed
         assert_equal host2, as_admin { dlmlock.reload.host }
       end
@@ -277,7 +277,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
       test 'should transparently create non-existing dlmlock' do
         lockname = 'Test Lock'
         assert_equal 0, as_admin { Dlmlock.where(:name => lockname).count }
-        delete :release, :id => lockname
+        delete :release, params: { :id => lockname }
         assert_response :success
         dlmlock = as_admin { Dlmlock.find_by(:name => lockname) }
         assert_equal lockname, dlmlock.name
@@ -295,7 +295,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#index' do
       test 'should deny access' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        get :index, :id => dlmlock.to_param
+        get :index, params: { :id => dlmlock.to_param }
         assert_response :unauthorized
       end
     end
@@ -303,7 +303,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#show' do
       test 'should deny access' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        get :show, :id => dlmlock.to_param
+        get :show, params: { :id => dlmlock.to_param }
         assert_response :unauthorized
       end
     end
@@ -311,7 +311,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#create' do
       test 'should deny access' do
         as_admin { FactoryBot.create(:dlmlock) }
-        post :create, valid_attrs_with_root
+        post :create, params: valid_attrs_with_root
         assert_response :unauthorized
       end
     end
@@ -319,7 +319,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#update' do
       test 'should deny access' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        put :update, :id => dlmlock.to_param, :dlmlock => valid_attrs
+        put :update, params: { :id => dlmlock.to_param, :dlmlock => valid_attrs }
         assert_response :unauthorized
       end
     end
@@ -327,7 +327,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#destroy' do
       test 'should deny access' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        delete :destroy, :id => dlmlock.to_param
+        delete :destroy, params: { :id => dlmlock.to_param }
         assert_response :unauthorized
         assert_equal 1, as_admin { Dlmlock.where(:id => dlmlock.id).count }
       end
@@ -336,7 +336,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#acquire' do
       test 'should deny access' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        put :acquire, :id => dlmlock.to_param
+        put :acquire, params: { :id => dlmlock.to_param }
         assert_response :unauthorized
         assert_nil as_admin { dlmlock.reload.host }
       end
@@ -345,7 +345,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#release' do
       test 'should deny access' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock, :host => host2) }
-        delete :release, :id => dlmlock.to_param
+        delete :release, params: { :id => dlmlock.to_param }
         assert_response :unauthorized
         assert_equal host2, as_admin { dlmlock.reload.host }
       end
