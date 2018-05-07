@@ -1,7 +1,0 @@
-<% title "#{@dlmlock.name} "%>
-
-<%= title_actions link_to(_('Back'), :back, :class => 'btn btn-default'),
-  ((link_to(_("Host details"), @dlmlock.host, :class => 'btn btn-default') if @dlmlock.host.present?))
-%>
-
-<%= render 'details' %>

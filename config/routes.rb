@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     end
   end
 
-  scope '/foreman_dlm' do
+  namespace :foreman_dlm do
     resources :dlmlocks, only: [:index, :show, :destroy] do
       collection do
         get :auto_complete_search

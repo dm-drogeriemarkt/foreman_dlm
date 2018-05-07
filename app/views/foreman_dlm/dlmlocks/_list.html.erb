@@ -13,7 +13,7 @@
       <tr class="<%= lock.enabled? ? '' : 'warning' %>">
         <td>
           <%= icon_text(dlmlock_status_icon_class(lock),
-                        link_to_if_authorized(lock.name, hash_for_dlmlock_path(:id => lock)),
+                        link_to_if_authorized(lock.name, hash_for_foreman_dlm_dlmlock_path(:id => lock)),
                         kind: 'fa',
                         class: "#{dlmlock_status_icon_color_class(lock)} fa-lg")
                       %>
