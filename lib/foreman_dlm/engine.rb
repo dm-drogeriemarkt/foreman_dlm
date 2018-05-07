@@ -21,7 +21,7 @@ module ForemanDlm
         # Add permissions
         security_block :foreman_dlm do
           permission :view_dlmlocks, {
-            :dlmlocks => [:index, :show, :auto_complete_search],
+            :'foreman_dlm/dlmlocks' => [:index, :show, :auto_complete_search],
             :'api/v2/dlmlocks' => [:index, :show]
           }, :resource_type => 'Dlmlock'
 
@@ -30,12 +30,12 @@ module ForemanDlm
           }, :resource_type => 'Dlmlock'
 
           permission :edit_dlmlocks, {
-            :dlmlocks => [:release, :enable, :disable],
+            :'foreman_dlm/dlmlocks' => [:release, :enable, :disable],
             :'api/v2/dlmlocks' => [:update, :acquire, :release]
           }, :resource_type => 'Dlmlock'
 
           permission :destroy_dlmlocks, {
-            :dlmlocks => [:destroy],
+            :'foreman_dlm/dlmlocks' => [:destroy],
             :'api/v2/dlmlocks' => [:destroy]
           }, :resource_type => 'Dlmlock'
         end
@@ -45,7 +45,7 @@ module ForemanDlm
 
         # add menu entry
         menu :top_menu, :distributed_locks,
-             url_hash: { controller: :dlmlocks, action: :index },
+             url_hash: { controller: :'foreman_dlm/dlmlocks', action: :index },
              caption: N_('Distributed Locks'),
              parent: :monitor_menu,
              after: :audits
