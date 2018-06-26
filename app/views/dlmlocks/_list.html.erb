@@ -5,6 +5,7 @@
       <th><%= sort :host, :as => _("Owner") %></th>
       <th><%= sort :type, :as => _("Type") %></th>
       <th><%= sort :enabled, :as => _("Enabled") %></th>
+      <th class="col-md-2"><%= _('Actions') %></th>
     </tr>
   </thead>
   <tbody>
@@ -37,6 +38,10 @@
           <% else %>
             <%= icon_text('toggle-off', 'Disabled', {kind: 'fa', class: 'center fa-lg', title: _('Disabled')}) %>
           <% end %>
+        </td>
+        <td>
+          <%= action_buttons(display_delete_if_authorized hash_for_dlmlock_path(:id => lock).merge(:auth_object => lock, :authorizer => authorizer),
+                             :confirm => _("Delete lock %s?") % lock.name) %>
         </td>
       </tr>
     <% end %>

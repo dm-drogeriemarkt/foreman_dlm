@@ -34,6 +34,7 @@ module ForemanDlm
           }, :resource_type => 'Dlmlock'
 
           permission :destroy_dlmlocks, {
+            :dlmlocks => [:destroy],
             :'api/v2/dlmlocks' => [:destroy]
           }, :resource_type => 'Dlmlock'
         end

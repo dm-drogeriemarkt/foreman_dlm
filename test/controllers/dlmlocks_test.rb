@@ -21,4 +21,11 @@ class DlmlocksControllerTest < ActionController::TestCase
     assert_response :success
     assert_template 'show'
   end
+
+  test '#destroy' do
+    dlmlock = FactoryBot.create(:dlmlock)
+    delete :destroy, params: { :id => dlmlock.id }, session: set_session_user
+    assert_redirected_to dlmlocks_url
+    refute Dlmlock.exists?(dlmlock.id)
+  end
 end
