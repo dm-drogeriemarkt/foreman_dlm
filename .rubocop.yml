@@ -53,6 +53,7 @@ Performance/FixedSize:
 Metrics/BlockLength:
   ExcludedMethods: ['describe', 'context']
   Exclude:
+    - 'config/routes.rb'
     - 'lib/foreman_dlm/engine.rb'
     - 'test/**/*'
 

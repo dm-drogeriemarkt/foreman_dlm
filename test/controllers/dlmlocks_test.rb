@@ -28,4 +28,26 @@ class DlmlocksControllerTest < ActionController::TestCase
     assert_redirected_to dlmlocks_url
     refute Dlmlock.exists?(dlmlock.id)
   end
+
+  test '#enable' do
+    dlmlock = FactoryBot.create(:dlmlock, enabled: false)
+    put :enable, params: { :id => dlmlock.id }, session: set_session_user
+    assert_redirected_to dlmlocks_url
+    assert dlmlock.reload.enabled?
+  end
+
+  test '#disable' do
+    dlmlock = FactoryBot.create(:dlmlock, enabled: true)
+    put :disable, params: { :id => dlmlock.id }, session: set_session_user
+    assert_redirected_to dlmlocks_url
+    assert dlmlock.reload.disabled?
+  end
+
+  test '#release' do
+    host = FactoryBot.create(:host)
+    dlmlock = FactoryBot.create(:dlmlock, host: host)
+    put :release, params: { :id => dlmlock.id }, session: set_session_user
+    assert_redirected_to dlmlocks_url
+    refute dlmlock.reload.taken?
+  end
 end

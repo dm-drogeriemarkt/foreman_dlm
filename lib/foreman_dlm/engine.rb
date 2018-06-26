@@ -30,6 +30,7 @@ module ForemanDlm
           }, :resource_type => 'Dlmlock'
 
           permission :edit_dlmlocks, {
+            :dlmlocks => [:release, :enable, :disable],
             :'api/v2/dlmlocks' => [:update, :acquire, :release]
           }, :resource_type => 'Dlmlock'
 
