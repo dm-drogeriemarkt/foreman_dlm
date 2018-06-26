@@ -51,7 +51,9 @@ Performance/FixedSize:
     - 'test/**/*'
 
 Metrics/BlockLength:
+  ExcludedMethods: ['describe', 'context']
   Exclude:
+    - 'lib/foreman_dlm/engine.rb'
     - 'test/**/*'
 
 Metrics/ClassLength:
