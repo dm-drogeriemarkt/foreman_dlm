@@ -36,6 +36,10 @@ To process the HTTP status code in a bash script, you can do something like this
 curl --write-out %{http_code} -H 'Content-Type: application/json' -sS -o /dev/null -X PUT --key $(puppet config print hostprivkey) --cert $(puppet config print hostcert) https://foreman.example.com/api/dlmlocks/test/lock
 ```
 
+## Client tooling
+
+A [client counterpart](https://github.com/schlitzered/foreman_dlm_updater) has been developed to make it easier for servers that want to acquire a lock to use this Foreman plug-in.
+
 ## Note about curl on macOS
 
 macOS uses curl with a different ssl library which gets problematic testing the cert-signed requests.
