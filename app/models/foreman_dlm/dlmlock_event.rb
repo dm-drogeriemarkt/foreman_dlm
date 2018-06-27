@@ -1,6 +1,7 @@
 module ForemanDlm
   class DlmlockEvent < ApplicationRecord
     include Authorizable
+    include Expirable
 
     TYPES = %w[release acquire enable disable failed].freeze
     validates :event_type, inclusion: { in: TYPES }
