@@ -5,7 +5,7 @@ module Api
       include Foreman::Controller::Parameters::Dlmlocks
       include ::ForemanDlm::FindHostByClientCert
 
-      wrap_parameters Dlmlock, :include => dlmlocks_params_filter.accessible_attributes(parameter_filter_context)
+      wrap_parameters ForemanDlm::Dlmlock, :include => dlmlocks_params_filter.accessible_attributes(parameter_filter_context)
 
       authorize_host_by_client_cert [:show, :release, :acquire]
 
@@ -17,7 +17,7 @@ module Api
       def_param_group :dlmlock do
         param :dlmlock, Hash, :required => true, :action_aware => true do
           param :name, String, :required => true, :desc => N_('Name')
-          param :type, ['Dlmlock:Update'], :required => true, :desc => N_('Type, e.g. Dlmlock:Update')
+          param :type, ['ForemanDlm::Dlmlock:Update'], :required => true, :desc => N_('Type, e.g. ForemanDlm::Dlmlock:Update')
           param :enabled, :bool, :desc => N_('Enable the lock')
         end
       end
@@ -41,7 +41,7 @@ module Api
       param_group :dlmlock, :as => :create
 
       def create
-        @dlmlock = Dlmlock.new(dlmlocks_params)
+        @dlmlock = ForemanDlm::Dlmlock.new(dlmlocks_params)
         process_response @dlmlock.save
       end
 
@@ -95,6 +95,10 @@ module Api
         process_lock_response @dlmlock.release!(@host)
       end
 
+      def resource_class
+        ForemanDlm::Dlmlock
+      end
+
       private
 
       def resource_finder(scope, id)
@@ -108,7 +112,7 @@ module Api
       def find_resource_or_create
         find_resource
       rescue ActiveRecord::RecordNotFound
-        @dlmlock = Dlmlock.create(:name => params[:id], :type => 'Dlmlock::Update')
+        @dlmlock = ForemanDlm::Dlmlock.create(:name => params[:id], :type => 'ForemanDlm::Dlmlock::Update')
       end
 
       def action_permission
