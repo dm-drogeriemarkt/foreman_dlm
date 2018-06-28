@@ -24,12 +24,12 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
 
     context '#create' do
       test 'should create dlmlock' do
-        assert_difference('Dlmlock.unscoped.count') do
+        assert_difference('ForemanDlm::Dlmlock.unscoped.count') do
           post :create, params: valid_attrs_with_root
         end
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
-        dlmlock = Dlmlock.find(body['id'])
+        dlmlock = ForemanDlm::Dlmlock.find(body['id'])
         assert dlmlock
         assert_equal valid_attrs['name'], dlmlock.name
         assert_equal valid_attrs['type'], dlmlock.type
@@ -99,11 +99,11 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
     context '#destroy' do
       test 'should destroy dlmlock' do
         dlmlock = FactoryBot.create(:dlmlock)
-        assert_difference('Dlmlock.unscoped.count', -1) do
+        assert_difference('ForemanDlm::Dlmlock.unscoped.count', -1) do
           delete :destroy, params: { :id => dlmlock.to_param }
         end
         assert_response :success
-        assert_equal 0, Dlmlock.where(:id => dlmlock.id).count
+        assert_equal 0, ForemanDlm::Dlmlock.where(:id => dlmlock.id).count
       end
     end
 
@@ -168,7 +168,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
         delete :destroy, params: { :id => dlmlock.to_param }
         assert_response :unauthorized
-        assert_equal 1, as_admin { Dlmlock.where(:id => dlmlock.id).count }
+        assert_equal 1, as_admin { ForemanDlm::Dlmlock.where(:id => dlmlock.id).count }
       end
     end
 
@@ -243,10 +243,10 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
 
       test 'should transparently create non-existing dlmlock' do
         lockname = 'Test Lock'
-        assert_equal 0, as_admin { Dlmlock.where(:name => lockname).count }
+        assert_equal 0, as_admin { ForemanDlm::Dlmlock.where(:name => lockname).count }
         put :acquire, params: { :id => lockname }
         assert_response :success
-        dlmlock = as_admin { Dlmlock.find_by(:name => lockname) }
+        dlmlock = as_admin { ForemanDlm::Dlmlock.find_by(:name => lockname) }
         assert_equal lockname, dlmlock.name
         assert_equal host1, dlmlock.host
       end
@@ -276,10 +276,10 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
 
       test 'should transparently create non-existing dlmlock' do
         lockname = 'Test Lock'
-        assert_equal 0, as_admin { Dlmlock.where(:name => lockname).count }
+        assert_equal 0, as_admin { ForemanDlm::Dlmlock.where(:name => lockname).count }
         delete :release, params: { :id => lockname }
         assert_response :success
-        dlmlock = as_admin { Dlmlock.find_by(:name => lockname) }
+        dlmlock = as_admin { ForemanDlm::Dlmlock.find_by(:name => lockname) }
         assert_equal lockname, dlmlock.name
         assert_nil dlmlock.host
       end
@@ -329,7 +329,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
         delete :destroy, params: { :id => dlmlock.to_param }
         assert_response :unauthorized
-        assert_equal 1, as_admin { Dlmlock.where(:id => dlmlock.id).count }
+        assert_equal 1, as_admin { ForemanDlm::Dlmlock.where(:id => dlmlock.id).count }
       end
     end
 
@@ -357,7 +357,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
   def valid_attrs
     {
       'name' => 'testlock',
-      'type' => 'Dlmlock::Update'
+      'type' => 'ForemanDlm::Dlmlock::Update'
     }
   end
 

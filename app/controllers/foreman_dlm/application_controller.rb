@@ -5,7 +5,7 @@ module ForemanDlm
     end
 
     def resource_name(resource = resource_class)
-      resource.name.downcase.singularize
+      resource.name.split('::').last.downcase.singularize
     end
 
     def controller_name

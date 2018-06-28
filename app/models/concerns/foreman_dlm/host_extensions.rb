@@ -4,6 +4,7 @@ module ForemanDlm
 
     included do
       has_many :dlmlocks,
+               class_name: 'ForemanDlm::Dlmlock',
                foreign_key: 'host_id',
                dependent: :nullify,
                inverse_of: :host

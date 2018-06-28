@@ -56,11 +56,7 @@ module ForemanDlm
     end
 
     def model_of_controller
-      Dlmlock
-    end
-
-    def resource_class
-      Dlmlock
+      ForemanDlm::Dlmlock
     end
 
     private
