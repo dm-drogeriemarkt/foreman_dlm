@@ -7,7 +7,12 @@ module ForemanDlm
     end
 
     belongs_to_host
-    audited
+
+    has_many :dlmlock_events,
+             class_name: '::ForemanDlm::DlmlockEvent',
+             foreign_key: 'dlmlock_id',
+             dependent: :destroy,
+             inverse_of: :dlmlock
 
     validates :name, presence: true, uniqueness: true
 
@@ -47,28 +52,50 @@ module ForemanDlm
     private
 
     def atomic_update(old_host, new_host)
-      changes = {
-        host_id: new_host.try(:id)
-      }
+      changes = { host_id: new_host.try(:id) }
       self.old = dup
-      num_updated = self.class.where(
+
+      query = {
         id: id,
         host_id: [new_host.try(:id), old_host.try(:id)],
         enabled: true
-      ).update_all(changes.merge(updated_at: Time.now.utc))
-      if num_updated > 0
+      }
+
+      amount_updated = self.class
+                           .where(query)
+                           .update_all(changes.merge(updated_at: Time.now.utc))
+
+      unless amount_updated.zero?
         reload
-        process_host_change(old_host, new_host, changes)
+        process_host_change(old_host, new_host)
         return self
       end
+
       false
     end
 
-    def process_host_change(old_host, new_host, changes)
+    def process_host_change(old_host, new_host)
       return if host.try(:id) == old.host.try(:id)
-      write_audit(action: 'update', audited_changes: changes)
-      run_callback(old_host, :unlock) if old.host
-      run_callback(new_host, :lock) if host
+
+      if old.host
+        log_event(old_host, 'release')
+        run_callback(old_host, :unlock)
+      end
+
+      return unless host
+
+      log_event(new_host, 'acquire')
+      run_callback(new_host, :lock)
+    end
+
+    def log_event(host, event_type)
+      dlmlock_event = dlmlock_events.build(
+        host: host,
+        event_type: event_type,
+        user: User.current
+      )
+
+      dlmlock_event.save
     end
 
     def run_callback(h, callback)

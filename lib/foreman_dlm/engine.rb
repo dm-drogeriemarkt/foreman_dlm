@@ -23,25 +23,31 @@ module ForemanDlm
           permission :view_dlmlocks, {
             :'foreman_dlm/dlmlocks' => [:index, :show, :auto_complete_search],
             :'api/v2/dlmlocks' => [:index, :show]
-          }, :resource_type => 'Dlmlock'
+          }, :resource_type => 'ForemanDlm::Dlmlock'
 
           permission :create_dlmlocks, {
             :'api/v2/dlmlocks' => [:create]
-          }, :resource_type => 'Dlmlock'
+          }, :resource_type => 'ForemanDlm::Dlmlock'
 
           permission :edit_dlmlocks, {
             :'foreman_dlm/dlmlocks' => [:release, :enable, :disable],
             :'api/v2/dlmlocks' => [:update, :acquire, :release]
-          }, :resource_type => 'Dlmlock'
+          }, :resource_type => 'ForemanDlm::Dlmlock'
 
           permission :destroy_dlmlocks, {
             :'foreman_dlm/dlmlocks' => [:destroy],
             :'api/v2/dlmlocks' => [:destroy]
-          }, :resource_type => 'Dlmlock'
+          }, :resource_type => 'ForemanDlm::Dlmlock'
+
+          permission :view_dlmlock_events, {}, :resource_type => 'ForemanDlm::DlmlockEvent'
         end
 
         # Add a new role called 'Distributed Lock Manager' if it doesn't exist
-        role 'Distributed Lock Manager', [:view_dlmlocks, :create_dlmlocks, :edit_dlmlocks, :destroy_dlmlocks]
+        role 'Distributed Lock Manager', [:view_dlmlocks,
+                                          :create_dlmlocks,
+                                          :edit_dlmlocks,
+                                          :destroy_dlmlocks,
+                                          :view_dlmlock_events]
 
         # add menu entry
         menu :top_menu, :distributed_locks,
@@ -56,6 +62,7 @@ module ForemanDlm
     config.to_prepare do
       begin
         Host::Managed.send(:include, ForemanDlm::HostExtensions)
+        User.send(:include, ForemanDlm::UserExtensions)
 
         Host::Managed.send(:include, ForemanDlm::HostMonitoringExtensions) if ForemanDlm.with_monitoring?
       rescue StandardError => e

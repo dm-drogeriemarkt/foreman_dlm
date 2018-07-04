@@ -1,35 +1,42 @@
-<table class="<%= table_css_classes('table-fixed') %>">
-  <thead>
-    <tr>
-      <th><%= _("Owner") %></th>
-      <th><%= _("Initiator") %></th>
-      <th><%= _("Timestamp") %></th>
-      <th><%= _("Enabled") %></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @dlmlock.audits.includes(:user).reorder(created_at: :desc).each do |audit| %>
-      <% revision = audit.revision %>
+<% if authorizer.can?(:view_dlmlock_events) %>
+  <table class="<%= table_css_classes('table-fixed') %>">
+    <thead>
       <tr>
-        <td>
-          <% if revision.host.present? %>
-            <%= link_to_if_authorized(revision.host.name, hash_for_host_path(:id => revision.host)) %>
-          <% end %>
-        </td>
-        <td>
-          <% if audit.user.hidden? %>
-            <em><%= audit.user.name %></em>
-          <% else %>
-            <%= link_to_if_authorized(audit.user.name, hash_for_edit_user_path(audit.user)) %>
-          <% end %>
-        </td>
-        <td>
-          <%= audit.created_at %>
-        </td>
-        <td>
-          <%= revision.enabled? %>
-        </td>
+        <th><%= _("Host") %></th>
+        <th><%= _("User") %></th>
+        <th><%= _("Type") %></th>
+        <th><%= _("Timestamp") %></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @dlmlock.dlmlock_events.includes(:user).reorder(created_at: :desc).each do |event| %>
+
+        <tr>
+          <td>
+            <% if event.host %>
+              <%= link_to_if_authorized(event.host.name, hash_for_host_path(:id => event.host)) %>
+            <% end %>
+          </td>
+
+          <td>
+            <% if event.user %>
+              <% if event.user.hidden? %>
+                <em><%= event.user.name %></em>
+              <% else %>
+                <%= link_to_if_authorized(event.user.name, hash_for_edit_user_path(event.user)) %>
+              <% end %>
+            <% end %>
+          </td>
+
+          <td>
+            <%= _(event.event_type.humanize) %>
+          </td>
+
+          <td>
+            <%= event.created_at %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

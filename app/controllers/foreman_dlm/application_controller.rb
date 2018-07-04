@@ -11,5 +11,9 @@ module ForemanDlm
     def controller_name
       "foreman_dlm_#{super}"
     end
+
+    def controller_permission
+      super.sub(/^foreman_dlm_/, '')
+    end
   end
 end

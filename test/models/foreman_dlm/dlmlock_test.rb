@@ -6,6 +6,9 @@ module ForemanDlm
       User.current = users(:admin)
     end
 
+    should belong_to(:host)
+    should have_many(:dlmlock_events)
+
     subject { FactoryBot.create(:dlmlock) }
     should validate_presence_of(:name)
     should validate_uniqueness_of(:name)
@@ -60,17 +63,20 @@ module ForemanDlm
         assert_nil dlmlock.reload.host
       end
 
-      test 'records audit change on acquisition by owner' do
-        assert_difference "Audit.where(auditable_type: 'ForemanDlm::Dlmlock', action: 'update').count" do
+      test 'creates a dlmlock_event on acquisition by owner' do
+        assert_difference -> { DlmlockEvent.count }, 1 do
           assert dlmlock.acquire!(host1)
         end
-        audit_record = dlmlock.audits.last
-        assert_equal 'update', audit_record.action
-        assert_equal({ :host_id => host1.id }, audit_record.audited_changes)
+
+        event = DlmlockEvent.last
+        assert_equal 'acquire', event.event_type
+        assert_equal host1.id, event.host_id
+        assert_equal users(:admin).id, event.user_id
+        assert_equal dlmlock.id, event.dlmlock_id
       end
 
       test 'records no audit change on release' do
-        assert_no_difference "Audit.where(auditable_type: 'ForemanDlm::Dlmlock', action: 'update').count" do
+        assert_no_difference -> { DlmlockEvent.where(event_type: 'release', dlmlock_id: dlmlock.id).count } do
           assert dlmlock.release!(host1)
         end
       end
@@ -152,12 +158,15 @@ module ForemanDlm
       end
 
       test 'records audit change on release by owner' do
-        assert_difference "Audit.where(auditable_type: 'ForemanDlm::Dlmlock', action: 'update').count" do
+        assert_difference -> { DlmlockEvent.count }, 1 do
           assert dlmlock.release!(host1)
         end
-        audit_record = dlmlock.audits.last
-        assert_equal 'update', audit_record.action
-        assert_equal({ :host_id => nil }, audit_record.audited_changes)
+
+        event = DlmlockEvent.last
+        assert_equal 'release', event.event_type
+        assert_equal host1.id, event.host_id
+        assert_equal users(:admin).id, event.user_id
+        assert_equal dlmlock.id, event.dlmlock_id
       end
 
       test 'records no audit change on acquisition by owner' do
