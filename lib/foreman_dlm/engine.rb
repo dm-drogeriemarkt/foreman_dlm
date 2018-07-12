@@ -55,6 +55,11 @@ module ForemanDlm
              caption: N_('Distributed Locks'),
              parent: :monitor_menu,
              after: :audits
+
+        # Dlm Facet
+        register_facet(ForemanDlm::DlmFacet, :dlm_facet) do
+          api_view list: 'foreman_dlm/api/v2/dlm_facets/base_with_root', single: 'foreman_dlm/api/v2/dlm_facets/show'
+        end
       end
     end
 
@@ -63,6 +68,7 @@ module ForemanDlm
       begin
         Host::Managed.send(:include, ForemanDlm::HostExtensions)
         User.send(:include, ForemanDlm::UserExtensions)
+        Host::Managed.send(:include, ForemanDlm::DlmFacetHostExtensions)
 
         Host::Managed.send(:include, ForemanDlm::HostMonitoringExtensions) if ForemanDlm.with_monitoring?
       rescue StandardError => e

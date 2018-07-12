@@ -4,10 +4,12 @@ module Api
       include Api::Version2
       include Foreman::Controller::Parameters::Dlmlocks
       include ::ForemanDlm::FindHostByClientCert
+      include ::ForemanDlm::UpdateCheckinTime
 
       wrap_parameters ForemanDlm::Dlmlock, :include => dlmlocks_params_filter.accessible_attributes(parameter_filter_context)
 
       authorize_host_by_client_cert [:show, :release, :acquire]
+      update_host_checkin_time [:show, :release, :acquire]
 
       before_action :find_resource, :only => [:show, :update, :destroy]
       before_action :find_resource_or_create, :only => [:release, :acquire]

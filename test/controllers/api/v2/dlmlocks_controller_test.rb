@@ -217,6 +217,13 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         assert_equal host2.name, host['name']
         assert_equal false, host['self']
       end
+
+      test 'should update checkin time' do
+        dlmlock = as_admin { FactoryBot.create(:dlmlock) }
+        refute as_admin { host1.dlm_facet }
+        put :show, params: { :id => dlmlock.to_param }
+        assert as_admin { host1.reload.dlm_facet.last_checkin_at }
+      end
     end
 
     context '#acquire' do
@@ -250,6 +257,13 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         assert_equal lockname, dlmlock.name
         assert_equal host1, dlmlock.host
       end
+
+      test 'should update checkin time' do
+        dlmlock = as_admin { FactoryBot.create(:dlmlock) }
+        refute as_admin { host1.dlm_facet }
+        put :acquire, params: { :id => dlmlock.to_param }
+        assert as_admin { host1.reload.dlm_facet.last_checkin_at }
+      end
     end
 
     context '#release' do
@@ -282,6 +296,13 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         dlmlock = as_admin { ForemanDlm::Dlmlock.find_by(:name => lockname) }
         assert_equal lockname, dlmlock.name
         assert_nil dlmlock.host
+      end
+
+      test 'should update checkin time' do
+        dlmlock = as_admin { FactoryBot.create(:dlmlock) }
+        refute as_admin { host1.dlm_facet }
+        put :release, params: { :id => dlmlock.to_param }
+        assert as_admin { host1.reload.dlm_facet.last_checkin_at }
       end
     end
   end
