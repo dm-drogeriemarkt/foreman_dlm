@@ -60,6 +60,14 @@ module ForemanDlm
         register_facet(ForemanDlm::DlmFacet, :dlm_facet) do
           api_view list: 'foreman_dlm/api/v2/dlm_facets/base_with_root', single: 'foreman_dlm/api/v2/dlm_facets/show'
         end
+
+        # extend host show page
+        extend_page('hosts/show') do |context|
+          context.add_pagelet :main_tabs,
+                              :name => N_('Locks'),
+                              :partial => 'hosts/dlmlocks_tab',
+                              :onlyif => proc { |host| host.dlm_facet }
+        end
       end
     end
 
