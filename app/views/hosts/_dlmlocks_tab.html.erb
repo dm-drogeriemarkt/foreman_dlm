@@ -1,0 +1,39 @@
+<% if @host.dlmlocks.any? %>
+  <%= alert class: 'alert-info',
+    header: '',
+    text: n_(
+      'This host holds %s lock.',
+      'This host holds %s locks.',
+      @host.dlmlocks.count
+    ) % @host.dlmlocks.count
+  %>
+<% end %>
+
+<table class="<%= table_css_classes %> table-fixed">
+  <thead>
+    <tr>
+      <th colspan="2"><%= _('Locks') %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><%= _('Last checkin') %></td>
+      <td><%= @host.dlm_facet && @host.dlm_facet.last_checkin_at ? date_time_relative(@host.dlm_facet.last_checkin_at) : _('N/A') %></td>
+    </tr>
+    <tr>
+      <td><%= _('Holds Locks') %></td>
+      <td>
+        <% if @host.dlmlocks.any? %>
+          <% @host.dlmlocks.authorized(:view_dlmlocks).each do |lock| %>
+            <%= link_to_if_authorized(lock.name, hash_for_foreman_dlm_dlmlock_path(lock)) %>
+            <span class="label label-<%= lock.updated_at > 6.hours.ago ? 'info' : 'warning' %>">
+              <%= _('acquired') %> <%= date_time_relative_value(lock.updated_at) %>
+            </span>
+          <% end %>
+        <% else %>
+          <%= _('None') %>
+        <% end %>
+      </td>
+    </tr>
+  </tbody>
+</table>
