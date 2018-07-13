@@ -1,11 +1,11 @@
 language: ruby
 rvm:
   - 2.3
-gemfile: foreman/Gemfile
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get -y install nodejs git libsqlite3-dev libpq-dev libmysqlclient-dev zlib1g-dev libvirt-dev
 install:
+  - unset BUNDLE_GEMFILE
   - cd ..
   - git clone https://github.com/theforeman/foreman.git -b ${FOREMAN_CORE_BRANCH} --depth 1
   - cd ${FOREMAN_PLUGIN_NAME}
