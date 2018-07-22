@@ -1,0 +1,10 @@
+[Unit]
+Description=Clean up expired Foreman DLM events
+Documentation=https://github.com/dm-drogeriemarkt/foreman_dlm/blob/master/README.md
+Requires=network.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/sysconfig/foreman_dlm
+ExecStart=/sbin/foreman-rake dlmlocks:expire
+TimeoutSec=30m
