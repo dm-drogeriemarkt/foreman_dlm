@@ -1,0 +1,13 @@
+[Unit]
+Description=Updatelock Release Lock
+Requires=network.target
+After=default.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/sysconfig/updatelock
+ExecStart=/usr/local/sbin/updatelock release
+TimeoutSec=90
+
+[Install]
+WantedBy=default.target

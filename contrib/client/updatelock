@@ -1,0 +1,215 @@
+#!/bin/bash
+
+if [[ -f /etc/profile.d/puppet-agent.sh ]]; then
+  source /etc/profile.d/puppet-agent.sh
+fi
+
+FOREMAN_DLM_URL="https://tfmdemo.beispiel.xyz/api/dlmlocks/"
+HOST_KEY=$(puppet config print hostprivkey)
+HOST_CERT=$(puppet config print hostcert)
+CA_CERT=$(puppet config print cacert)
+
+LOCKNAME="updatelock_test"
+LOCKURL="${FOREMAN_DLM_URL}/${LOCKNAME}/lock"
+
+ISTTY="test -t 1"
+
+function pinfo()
+{
+  local TEXT="[updatelock]: ${1}"
+
+  # test if stdout is terminal
+  if $ISTTY; then
+    echo -e "\e[32m${TEXT}\e[0m"
+  else
+    echo -e "${TEXT}"
+  fi
+}
+
+function pwarn()
+{
+  local TEXT="[updatelock] WARN: ${1}"
+
+  # test if stdout is terminal
+  if $ISTTY; then
+    echo -e "\e[33m${TEXT}\e[0m"
+  else
+    echo -e "${TEXT}"
+  fi
+}
+
+function perror()
+{
+  local TEXT="[updatelock] ERROR: ${1}"
+
+  # test if stdout is terminal
+  if $ISTTY; then
+    echo -e "\e[31m${TEXT}\e[0m" >&2
+  else
+    echo -e "${TEXT}" >&2
+  fi
+}
+
+usage() {
+  echo "Usage: $0 [ update | release | status | lock ]";
+}
+
+check_prerequisites() {
+  if ( [ -z "${HOST_KEY}" ] ) || ( [ ! -f ${HOST_KEY} ] ); then
+    perror "Host's SSL key could not be found."
+    exit 1
+  fi
+
+  if ( [ -z "${HOST_CERT}" ] ) || ( [ ! -f ${HOST_CERT} ] ); then
+    perror "Host's SSL certificate could not be found."
+    exit 1
+  fi
+
+  if ( [ -z "${CA_CERT}" ] ) || ( [ ! -f ${CA_CERT} ] ); then
+    perror "Host's CA certificate could not be found."
+    exit 1
+  fi
+}
+
+status() {
+  check_prerequisites
+  local STATUS=$(curl --key $HOST_KEY --cert $HOST_CERT --cacert $CA_CERT --write-out %{http_code} -sS -o /dev/null ${LOCKURL})
+
+  case ${STATUS} in
+    200)
+      HOLDER=$(curl --key $HOST_KEY --cert $HOST_CERT --cacert $CA_CERT -sS ${LOCKURL} | ruby -e 'require "json"; j=JSON.parse(gets.downcase); puts j["host"]["name"] rescue puts "";')
+      if [[ "${HOLDER}" = "" ]]; then
+        pinfo "Lock is currently not acquired"
+      elif [[ "${HOLDER}" = ${HOST} ]]; then
+        pinfo "Lock is acquired by me"
+      else
+        pinfo "Lock is locked by ${HOLDER}"
+      fi
+      ;;
+    401)
+      pinfo "401 Unauthorized"
+      return 1
+      ;;
+    404)
+      pinfo "Lock does not exist; so it is free by definition"
+      ;;
+  esac;
+}
+
+release() {
+  check_prerequisites
+  local STATUS=$(curl --key $HOST_KEY --cert $HOST_CERT --cacert $CA_CERT -H 'Content-Type: application/json' --write-out %{http_code} -sS -o /dev/null ${LOCKURL} -XDELETE)
+
+  case ${STATUS} in
+    200)
+      pinfo "Released lock"
+      ;;
+    401)
+      pinfo "401 Unauthorized"
+      return 1
+      ;;
+    412)
+      perror "Can not release. Lock is not acquired by this host."
+      return 1
+      ;;
+    *)
+      perror "invalid return code ${STATUS}"
+      return 1
+      ;;
+  esac;
+
+  return 0
+}
+
+lock() {
+  check_prerequisites
+  local STATUS=$(curl --key $HOST_KEY --cert $HOST_CERT --cacert $CA_CERT -H 'Content-Type: application/json' --write-out %{http_code} -sS -o /dev/null ${LOCKURL} -XPUT)
+
+  case ${STATUS} in
+    200)
+      pinfo "Acquired update lock ${LOCKNAME}"
+      ;;
+    401)
+      pinfo "401 Unauthorized"
+      return 1
+      ;;
+    412)
+      perror "Can not acquire lock. It is probably acquired by another host."
+      return 1
+      ;;
+    *)
+      perror "invalid return code ${STATUS}"
+      return 1
+      ;;
+  esac;
+
+  return 0
+}
+
+update() {
+
+  # checking pre update hooks
+  if [[ -d /etc/updatelock/pre-update.d ]]; then
+    for f in /etc/updatelock/pre-update.d/*
+    do
+      if [[ -f ${f} ]]; then
+        if ! ${f}; then
+          perror "Hook ${f} failed --> Exit"
+          exit 1
+        fi
+        pinfo "Hook ${f} succeeded"
+      fi
+    done
+  fi
+
+  wait_sleep
+
+  lock
+  if [[ $? -ne 0 ]]; then
+    exit 1;
+  fi
+
+  pinfo "Updating system"
+  yum upgrade -y
+
+  yum makecache
+  local needs_restarting=$(/usr/bin/needs-restarting)
+  local rc=$?;
+  if [[ $rc -ne 0 ]]; then
+    perror "Could not check if system needs a reboot."
+    release
+    exit 1;
+  fi
+
+  if [[ $(echo -n "${needs_restarting}" | wc -l) -gt 0 ]]; then
+    echo -n "${needs_restarting}"
+    pinfo "Rebooting in one minute..."
+    /sbin/shutdown -r +1
+  else
+    pinfo "No reboot necessary."
+    release
+  fi
+}
+
+if [[ $# -ne 1 ]]; then
+  usage
+  exit 1
+fi
+
+case $1 in
+  update)
+    update
+    ;;
+  release)
+    release
+    ;;
+  status)
+    status
+    ;;
+  lock)
+    lock
+    ;;
+  *)
+    usage
+    ;;
+esac;

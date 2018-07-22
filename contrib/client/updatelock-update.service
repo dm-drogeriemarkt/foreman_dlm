@@ -1,0 +1,10 @@
+[Unit]
+Description=Updatelock Update
+Requires=network.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/sysconfig/updatelock
+ExecStart=/usr/local/sbin/updatelock update
+TimeoutSec=30m
+SuccessExitStatus=0 1
