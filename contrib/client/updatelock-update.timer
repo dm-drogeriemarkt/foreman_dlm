@@ -1,0 +1,8 @@
+[Unit]
+Description=Run updatelock-update.service periodically
+
+[Timer]
+OnCalendar=Mon,Tue,Wed,Thu *-*-* 02,03,04:30:00
+
+[Install]
+WantedBy=basic.target

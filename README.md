@@ -36,9 +36,11 @@ To process the HTTP status code in a bash script, you can do something like this
 curl --write-out %{http_code} -H 'Content-Type: application/json' -sS -o /dev/null -X PUT --key $(puppet config print hostprivkey) --cert $(puppet config print hostcert) https://foreman.example.com/api/dlmlocks/test/lock
 ```
 
-## Client tooling
+## Client setup
 
-A [client counterpart](https://github.com/schlitzered/foreman_dlm_updater) has been developed to make it easier for servers that want to acquire a lock to use this Foreman plug-in.
+The Foreman plugin itself just provides a central lock manager. To setup automatic updates, you need to run a script on your clients that tries to acquire a lock in Foreman and takes care of the actual patching process.
+The `contrib/client` directory in this repo contains a basic script and systemd units that should allow you to get started.
+A [client counterpart](https://github.com/schlitzered/foreman_dlm_updater) written in Python has been developed by the community to make it easier to use this Foreman plug-in.
 
 ## Note about curl on macOS
 
