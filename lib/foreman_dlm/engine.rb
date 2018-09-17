@@ -31,7 +31,7 @@ module ForemanDlm
         security_block :foreman_dlm do
           permission :view_dlmlocks, {
             :'foreman_dlm/dlmlocks' => [:index, :show, :auto_complete_search],
-            :'api/v2/dlmlocks' => [:index, :show]
+            :'api/v2/dlmlocks' => [:index, :show, :events]
           }, :resource_type => 'ForemanDlm::Dlmlock'
 
           permission :create_dlmlocks, {
@@ -48,7 +48,9 @@ module ForemanDlm
             :'api/v2/dlmlocks' => [:destroy]
           }, :resource_type => 'ForemanDlm::Dlmlock'
 
-          permission :view_dlmlock_events, {}, :resource_type => 'ForemanDlm::DlmlockEvent'
+          permission :view_dlmlock_events, {
+            :'api/v2/dlmlock_events' => [:index]
+          }, :resource_type => 'ForemanDlm::DlmlockEvent'
         end
 
         # Add a new role called 'Distributed Lock Manager' if it doesn't exist
