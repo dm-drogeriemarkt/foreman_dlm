@@ -14,6 +14,8 @@ module ForemanDlm
     belongs_to :dlmlock, inverse_of: :dlmlock_events, class_name: 'ForemanDlm::Dlmlock'
     belongs_to :user, inverse_of: :dlmlock_events
 
+    scoped_search on: :event_type, complete_value: true
+
     def humanized_type
       _('Dlmlock Event')
     end
