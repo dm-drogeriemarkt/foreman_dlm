@@ -3,7 +3,7 @@ module ForemanDlm
     include Authorizable
     include Expirable
 
-    TYPES = %w[release acquire enable disable failed].freeze
+    TYPES = %w[release acquire enable disable fail].freeze
     validates :event_type, inclusion: { in: TYPES }
 
     def self.humanize_class_name

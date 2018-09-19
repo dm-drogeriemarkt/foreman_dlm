@@ -40,6 +40,22 @@ module ForemanDlm
       atomic_update(host, nil)
     end
 
+    def enable!
+      return false unless update(enabled: true)
+
+      log_event(host, :enable)
+
+      true
+    end
+
+    def disable!
+      return false unless update(enabled: false)
+
+      log_event(host, :disable)
+
+      true
+    end
+
     def locked_by?(host)
       self.host == host
     end
@@ -70,16 +86,16 @@ module ForemanDlm
         enabled: true
       }
 
-      amount_updated = self.class
-                           .where(query)
-                           .update_all(changes.merge(updated_at: Time.now.utc))
+      updated = self.class.where(query).update_all(changes.merge(updated_at: Time.now.utc))
 
-      unless amount_updated.zero?
+      unless updated.zero?
         reload
         process_host_change(old_host, new_host)
         [old_host, new_host].compact.each(&:refresh_dlmlock_status)
-        return self
+        return true
       end
+
+      log_event(host, :fail)
 
       false
     end
@@ -88,24 +104,23 @@ module ForemanDlm
       return if host.try(:id) == old.host.try(:id)
 
       if old.host
-        log_event(old_host, 'release')
+        log_event(old_host, :release)
         run_callback(old_host, :unlock)
       end
 
       return unless host
 
-      log_event(new_host, 'acquire')
+      log_event(new_host, :acquire)
       run_callback(new_host, :lock)
     end
 
     def log_event(host, event_type)
-      dlmlock_event = dlmlock_events.build(
-        host: host,
+      DlmlockEvent.create(
+        dlmlock: self,
         event_type: event_type,
+        host: host,
         user: User.current
       )
-
-      dlmlock_event.save
     end
 
     def run_callback(h, callback)

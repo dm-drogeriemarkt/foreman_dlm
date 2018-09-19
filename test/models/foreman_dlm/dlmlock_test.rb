@@ -75,12 +75,6 @@ module ForemanDlm
         assert_equal dlmlock.id, event.dlmlock_id
       end
 
-      test 'records no audit change on release' do
-        assert_no_difference -> { DlmlockEvent.where(event_type: 'release', dlmlock_id: dlmlock.id).count } do
-          assert dlmlock.release!(host1)
-        end
-      end
-
       test 'triggers after_lock callback' do
         host = HostWithCallbacks.new
         host.name = 'test.example.com'
@@ -240,6 +234,64 @@ module ForemanDlm
           refute_includes subject, not_stale
           refute_includes subject, not_locked
         end
+      end
+    end
+
+    context '#log_events' do
+      let(:dlmlock) { FactoryBot.create(:dlmlock) }
+
+      test 'logs acquire event' do
+        assert_difference -> { DlmlockEvent.count }, 1 do
+          dlmlock.acquire!(host1)
+        end
+
+        event = DlmlockEvent.last
+        assert_equal 'acquire', event.event_type
+        assert_equal host1, event.host
+      end
+
+      test 'logs disable event' do
+        assert_difference -> { DlmlockEvent.count }, 1 do
+          dlmlock.disable!
+        end
+
+        event = DlmlockEvent.last
+        assert_equal 'disable', event.event_type
+      end
+
+      test 'logs enable event' do
+        dlmlock.update(enabled: false)
+
+        assert_difference -> { DlmlockEvent.count }, 1 do
+          dlmlock.enable!
+        end
+
+        event = DlmlockEvent.last
+        assert_equal 'enable', event.event_type
+      end
+
+      test 'logs failed event' do
+        dlmlock.acquire!(host1)
+
+        assert_difference -> { DlmlockEvent.count }, 1 do
+          dlmlock.acquire!(host2)
+        end
+
+        event = DlmlockEvent.last
+        assert_equal 'fail', event.event_type
+        assert_equal host1, event.host
+      end
+
+      test 'logs release event' do
+        dlmlock.acquire!(host1)
+
+        assert_difference -> { DlmlockEvent.count }, 1 do
+          assert dlmlock.release!(host1)
+        end
+
+        event = DlmlockEvent.last
+        assert_equal 'release', event.event_type
+        assert_equal host1, event.host
       end
     end
   end
