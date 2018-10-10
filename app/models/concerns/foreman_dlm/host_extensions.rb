@@ -18,5 +18,9 @@ module ForemanDlm
       define_model_callbacks :lock, :only => :after
       define_model_callbacks :unlock, :only => :after
     end
+
+    def refresh_dlmlock_status
+      refresh_statuses([HostStatus::DlmlockStatus])
+    end
   end
 end
