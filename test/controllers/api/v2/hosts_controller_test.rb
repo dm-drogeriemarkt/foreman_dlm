@@ -1,4 +1,4 @@
-require 'test_plugin_helper'
+require_relative '../../../test_plugin_helper'
 
 class Api::V2::HostsControllerTest < ActionController::TestCase
   let(:host) { FactoryBot.create(:host, :managed, :with_dlm_facet) }
