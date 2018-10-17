@@ -1,4 +1,4 @@
-require 'test_plugin_helper'
+require_relative '../test_plugin_helper'
 
 module Host
   class ManagedTest < ActiveSupport::TestCase

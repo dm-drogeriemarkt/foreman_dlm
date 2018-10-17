@@ -1,4 +1,4 @@
-require 'test_plugin_helper'
+require_relative '../test_plugin_helper'
 
 class FindHostByClientCertTest < ActionController::TestCase
   tests 'api/v2/dlmlocks'
