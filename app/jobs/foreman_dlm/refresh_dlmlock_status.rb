@@ -7,7 +7,7 @@ module ForemanDlm
     end
 
     rescue_from(StandardError) do |error|
-      Foreman::Logging.exception("Failed to refresh Distributed Lock status", error, logger: 'background')
+      Foreman::Logging.exception('Failed to refresh Distributed Lock status', error, logger: 'background')
     end
 
     def humanized_name
