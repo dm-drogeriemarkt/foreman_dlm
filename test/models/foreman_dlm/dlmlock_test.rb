@@ -208,5 +208,39 @@ module ForemanDlm
         assert_equal Dlmlock::Update.find(dlmlock.id), Dlmlock.search_for("name ~ #{dlmlock.name}").first
       end
     end
+
+    describe '#locked' do
+      subject { Dlmlock.locked }
+
+      it 'includes only Distributed Locks that are locked' do
+        locked = FactoryBot.create(:dlmlock, :locked)
+        not_locked = FactoryBot.create(:dlmlock)
+
+        assert_includes subject, locked
+        refute_includes subject, not_locked
+      end
+    end
+
+    describe '#stale' do
+      setup do
+        FactoryBot.create(:setting, category: Setting::General, name: 'dlm_stale_time', value: 4)
+      end
+
+      subject { Dlmlock.stale }
+
+      it 'includes only Distributed Locks that are stale' do
+        now = Time.now.utc
+
+        travel_to now do
+          stale = FactoryBot.create(:dlmlock, :locked, updated_at: now - 5.hours)
+          not_stale = FactoryBot.create(:dlmlock, :locked, updated_at: now)
+          not_locked = FactoryBot.create(:dlmlock)
+
+          assert_includes subject, stale
+          refute_includes subject, not_stale
+          refute_includes subject, not_locked
+        end
+      end
+    end
   end
 end

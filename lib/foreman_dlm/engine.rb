@@ -4,6 +4,15 @@ module ForemanDlm
 
     config.autoload_paths += Dir["#{config.root}/app/controllers/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/models/concerns"]
+    config.autoload_paths += Dir["#{config.root}/app/jobs"]
+
+    initializer 'foreman_dlm.load_default_settings', before: :load_config_initializers do
+      require_dependency File.expand_path('../../app/models/settings/dlm.rb', __dir__) if begin
+                                                                                         Setting.table_exists?
+                                                                                       rescue StandardError
+                                                                                         (false)
+                                                                                       end
+    end
 
     # Add any db migrations
     initializer 'foreman_dlm.load_app_instance_data' do |app|
@@ -60,6 +69,8 @@ module ForemanDlm
         register_facet(ForemanDlm::DlmFacet, :dlm_facet) do
           api_view list: 'foreman_dlm/api/v2/dlm_facets/base_with_root', single: 'foreman_dlm/api/v2/dlm_facets/show'
         end
+
+        register_custom_status HostStatus::DlmlockStatus
 
         # extend host show page
         extend_page('hosts/show') do |context|

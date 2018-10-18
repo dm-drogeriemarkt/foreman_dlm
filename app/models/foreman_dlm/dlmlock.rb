@@ -6,6 +6,10 @@ module ForemanDlm
       N_('Distributed Lock')
     end
 
+    def self.dlm_stale_time
+      (Setting::General[:dlm_stale_time] || 4).hours
+    end
+
     belongs_to_host
 
     has_many :dlmlock_events,
@@ -16,6 +20,9 @@ module ForemanDlm
 
     validates :name, presence: true, uniqueness: true
 
+    scope :locked,  -> { where.not(host_id: nil) }
+    scope :stale,   -> { locked.where('updated_at < ?', Time.now.utc - dlm_stale_time) }
+
     scoped_search :on => :name, :complete_value => true, :default_order => true
     scoped_search :relation => :host, :on => :name, :complete_value => true, :rename => :host
     scoped_search :on => :type, :complete_value => true, :default_order => true
@@ -24,7 +31,9 @@ module ForemanDlm
     attr_accessor :old
 
     def acquire!(host)
-      atomic_update(nil, host)
+      result = atomic_update(nil, host)
+      ForemanDlm::RefreshDlmlockStatus.set(wait: self.class.dlm_stale_time).perform_later([host.id]) if result
+      result
     end
 
     def release!(host)
@@ -68,6 +77,7 @@ module ForemanDlm
       unless amount_updated.zero?
         reload
         process_host_change(old_host, new_host)
+        [old_host, new_host].compact.each(&:refresh_dlmlock_status)
         return self
       end
 
