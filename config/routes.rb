@@ -11,7 +11,6 @@ Rails.application.routes.draw do
           get :lock, on: :member, action: :show, controller: 'dlmlocks'
           put :lock, on: :member, action: :acquire, controller: 'dlmlocks'
           delete :lock, on: :member, action: :release, controller: 'dlmlocks'
-
         end
       end
       resources :dlmlocks, only: [:create]

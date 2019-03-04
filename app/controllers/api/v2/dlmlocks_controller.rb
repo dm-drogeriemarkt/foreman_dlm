@@ -11,7 +11,7 @@ module Api
       authorize_host_by_client_cert [:show, :release, :acquire]
       update_host_checkin_time [:show, :release, :acquire]
 
-      before_action :find_resource, :only => [:show, :update, :destroy, :events]
+      before_action :find_resource, :only => [:show, :update, :destroy]
       before_action :find_resource_or_create, :only => [:release, :acquire]
       before_action :find_host, :only => [:release, :acquire]
       before_action :setup_search_options, :only => [:index]
@@ -119,8 +119,6 @@ module Api
 
       def action_permission
         case params[:action]
-        when 'events'
-          :view
         when 'release', 'acquire'
           :edit
         else
