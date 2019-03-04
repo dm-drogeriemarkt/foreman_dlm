@@ -18,6 +18,8 @@ script:
   - bundle exec rubocop
   - cd ../foreman
   - bundle exec rake test:${FOREMAN_PLUGIN_NAME}
+  - bundle exec rake "plugin:assets:precompile[${FOREMAN_PLUGIN_NAME}]" RAILS_ENV=production
+  - bundle exec rake test TEST="test/unit/foreman/access_permissions_test.rb"
 env:
   global:
     - TESTOPTS=-v
