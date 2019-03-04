@@ -6,7 +6,7 @@ module Api
       before_action :find_required_nested_object
 
       api :GET, '/dlmlocks/:dlmlock_id/dlmlock_events', N_('List all events for a given DLM lock')
-      param :dlmlock_id, String, :desc => N_('ID of dlmlock')
+      param :dlmlock_id, String, :desc => N_('ID of DLM lock')
 
       def index
         @events = resource_scope_for_index
