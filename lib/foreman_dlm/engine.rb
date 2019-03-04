@@ -31,7 +31,7 @@ module ForemanDlm
         security_block :foreman_dlm do
           permission :view_dlmlocks, {
             :'foreman_dlm/dlmlocks' => [:index, :show, :auto_complete_search],
-            :'api/v2/dlmlocks' => [:index, :show, :events]
+            :'api/v2/dlmlocks' => [:index, :show]
           }, :resource_type => 'ForemanDlm::Dlmlock'
 
           permission :create_dlmlocks, {
