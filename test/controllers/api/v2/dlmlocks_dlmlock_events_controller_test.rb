@@ -6,15 +6,15 @@ class Api::V2::DlmlockEventsControllerTest < ActionController::TestCase
   context 'with user authentication' do
     context '#index' do
       test 'should return the dlmlock_events for a given dlm_lock' do
-        expected_size = 3
 
         # A random dlmlock with events, that should not be in the response.
         dlmlock1 = FactoryBot.create(:dlmlock, host: host)
         FactoryBot.create_list(:dlmlock_event, 2, dlmlock: dlmlock1)
 
         dlmlock = FactoryBot.create(:dlmlock, host: host)
-        FactoryBot.create_list(:dlmlock_event, expected_size, dlmlock: dlmlock)
+        FactoryBot.create_list(:dlmlock_event, 3, dlmlock: dlmlock)
 
+        expected_size = dlmlock.dlmlock_events.count
         expected_ids = dlmlock.dlmlock_events.pluck(:id).sort
         expected_keys = ['id', 'event_type', 'created_at', 'updated_at']
 
