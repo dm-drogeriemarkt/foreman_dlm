@@ -152,6 +152,7 @@ module ForemanDlm
       end
 
       test 'records audit change on release by owner' do
+        dlmlock
         assert_difference -> { DlmlockEvent.count }, 1 do
           assert dlmlock.release!(host1)
         end

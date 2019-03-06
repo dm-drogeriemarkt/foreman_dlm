@@ -20,19 +20,19 @@ module ForemanDlm
 
     validates :name, presence: true, uniqueness: true
 
-    after_save :log_events
+    after_save :log_enable_or_disable_event, if: -> { saved_change_to_enabled? }
+    after_save :log_release_and_acquire_events, if: -> { saved_change_to_host_id? }
 
-    def log_events
-      if saved_changes[:enabled]
-        event_type = enabled ? :enable : :disable
-        log_event(host, event_type)
-      end
-      if saved_changes[:host_id]
-        old_host_id = saved_changes[:host_id].first
-        old_host = Host.find_by(id: old_host_id) if old_host_id
-        log_event(old_host, :release) if old_host
-        log_event(host, :acquire) if host
-      end
+    def log_enable_or_disable_event
+      event_type = enabled ? :enable : :disable
+      log_event(host, event_type)
+    end
+
+    def log_release_and_acquire_events
+      old_host_id = saved_changes[:host_id].first
+      old_host = Host.find_by(id: old_host_id) if old_host_id
+      log_event(old_host, :release) if old_host
+      log_event(host, :acquire) if host
     end
 
     scope :locked,  -> { where.not(host_id: nil) }
@@ -102,7 +102,7 @@ module ForemanDlm
         return true
       end
 
-      # log_event(host, :fail)
+      log_event(host, :fail)
 
       false
     end
@@ -111,13 +111,11 @@ module ForemanDlm
       return if host.try(:id) == old.host.try(:id)
 
       if old.host
-        # log_event(old_host, :release)
         run_callback(old_host, :unlock)
       end
 
       return unless host
 
-      # log_event(new_host, :acquire)
       run_callback(new_host, :lock)
     end
 
