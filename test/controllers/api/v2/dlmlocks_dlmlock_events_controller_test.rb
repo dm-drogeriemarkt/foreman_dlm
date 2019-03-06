@@ -6,7 +6,6 @@ class Api::V2::DlmlockEventsControllerTest < ActionController::TestCase
   context 'with user authentication' do
     context '#index' do
       test 'should return the dlmlock_events for a given dlm_lock' do
-
         # A random dlmlock with events, that should not be in the response.
         dlmlock1 = FactoryBot.create(:dlmlock, host: host)
         FactoryBot.create_list(:dlmlock_event, 2, dlmlock: dlmlock1)
