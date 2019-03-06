@@ -20,6 +20,21 @@ module ForemanDlm
 
     validates :name, presence: true, uniqueness: true
 
+    after_save :log_enable_or_disable_event, if: -> { saved_change_to_enabled? }
+    after_save :log_release_and_acquire_events, if: -> { saved_change_to_host_id? }
+
+    def log_enable_or_disable_event
+      event_type = enabled ? :enable : :disable
+      log_event(host, event_type)
+    end
+
+    def log_release_and_acquire_events
+      old_host_id = saved_changes[:host_id].first
+      old_host = Host.find_by(id: old_host_id) if old_host_id
+      log_event(old_host, :release) if old_host
+      log_event(host, :acquire) if host
+    end
+
     scope :locked,  -> { where.not(host_id: nil) }
     scope :stale,   -> { locked.where('updated_at < ?', Time.now.utc - dlm_stale_time) }
 
@@ -38,6 +53,14 @@ module ForemanDlm
 
     def release!(host)
       atomic_update(host, nil)
+    end
+
+    def enable!
+      update(enabled: true)
+    end
+
+    def disable!
+      update(enabled: false)
     end
 
     def locked_by?(host)
@@ -70,16 +93,16 @@ module ForemanDlm
         enabled: true
       }
 
-      amount_updated = self.class
-                           .where(query)
-                           .update_all(changes.merge(updated_at: Time.now.utc))
+      updated = self.class.where(query).update(changes.merge(updated_at: Time.now.utc))
 
-      unless amount_updated.zero?
+      unless updated.count.zero?
         reload
         process_host_change(old_host, new_host)
         [old_host, new_host].compact.each(&:refresh_dlmlock_status)
-        return self
+        return true
       end
+
+      log_event(host, :fail)
 
       false
     end
@@ -87,25 +110,20 @@ module ForemanDlm
     def process_host_change(old_host, new_host)
       return if host.try(:id) == old.host.try(:id)
 
-      if old.host
-        log_event(old_host, 'release')
-        run_callback(old_host, :unlock)
-      end
+      run_callback(old_host, :unlock) if old.host
 
       return unless host
 
-      log_event(new_host, 'acquire')
       run_callback(new_host, :lock)
     end
 
     def log_event(host, event_type)
-      dlmlock_event = dlmlock_events.build(
-        host: host,
+      DlmlockEvent.create!(
+        dlmlock: self,
         event_type: event_type,
+        host: host,
         user: User.current
       )
-
-      dlmlock_event.save
     end
 
     def run_callback(h, callback)

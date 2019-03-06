@@ -34,7 +34,7 @@ module ForemanDlm
     end
 
     def disable
-      if @dlmlock.update(enabled: false)
+      if @dlmlock.disable!
         process_success(
           :success_msg => _('Successfully disabled lock.'),
           :success_redirect => foreman_dlm_dlmlocks_path
@@ -45,7 +45,7 @@ module ForemanDlm
     end
 
     def enable
-      if @dlmlock.update(enabled: true)
+      if @dlmlock.enable!
         process_success(
           :success_msg => _('Successfully enabled lock.'),
           :success_redirect => foreman_dlm_dlmlocks_path
