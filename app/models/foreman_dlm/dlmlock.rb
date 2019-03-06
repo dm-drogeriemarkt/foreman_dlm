@@ -110,9 +110,7 @@ module ForemanDlm
     def process_host_change(old_host, new_host)
       return if host.try(:id) == old.host.try(:id)
 
-      if old.host
-        run_callback(old_host, :unlock)
-      end
+      run_callback(old_host, :unlock) if old.host
 
       return unless host
 
