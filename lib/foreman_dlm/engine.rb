@@ -61,7 +61,7 @@ module ForemanDlm
                                           :view_dlmlock_events]
 
         # add menu entry
-        menu :top_menu, :distributed_locks,
+        menu :top_menu, :foreman_dlm_dlmlocks,
              url_hash: { controller: :'foreman_dlm/dlmlocks', action: :index },
              caption: N_('Distributed Locks'),
              parent: :monitor_menu,
