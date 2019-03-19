@@ -2,14 +2,14 @@
   <%= alert class: 'alert-info',
     header: '',
     text: n_(
-      'This host holds %s lock.',
+      'This host holds one lock.',
       'This host holds %s locks.',
       @host.dlmlocks.count
     ) % @host.dlmlocks.count
   %>
 <% end %>
 
-<table class="<%= table_css_classes %> table-fixed">
+<table class="<%= table_css_classes %>">
   <thead>
     <tr>
       <th colspan="2"><%= _('Locks') %></th>
@@ -17,7 +17,7 @@
   </thead>
   <tbody>
     <tr>
-      <td><%= _('Last checkin') %></td>
+      <td class="text-nowrap"><%= _('Last check-in') %></td>
       <td><%= @host.dlm_facet && @host.dlm_facet.last_checkin_at ? date_time_relative(@host.dlm_facet.last_checkin_at) : _('N/A') %></td>
     </tr>
     <tr>

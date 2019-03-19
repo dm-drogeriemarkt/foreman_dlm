@@ -1,6 +1,6 @@
 <% title @dlmlock.name %>
 <% breadcrumbs(
-   resource_url: api_dlmlocks_path
+  resource_url: api_dlmlocks_path
 ) if respond_to?(:breadcrumbs) # Requires Foreman >= 1.18 %>
 
 <%= title_actions link_to(_('Back'), foreman_dlm_dlmlocks_path, :class => 'btn btn-default'),
