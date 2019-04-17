@@ -7,7 +7,7 @@ module ForemanDlm
     config.autoload_paths += Dir["#{config.root}/app/jobs"]
 
     initializer 'foreman_dlm.load_default_settings', before: :load_config_initializers do
-      require_dependency File.expand_path('../../app/models/settings/dlm.rb', __dir__) if begin
+      require_dependency File.expand_path('../../app/models/setting/dlm.rb', __dir__) if begin
                                                                                          Setting.table_exists?
                                                                                        rescue StandardError
                                                                                          (false)

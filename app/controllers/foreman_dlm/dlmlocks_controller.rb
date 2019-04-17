@@ -59,6 +59,14 @@ module ForemanDlm
       ForemanDlm::Dlmlock
     end
 
+    # see https://projects.theforeman.org/issues/25976
+    # can be removed for Foreman 1.22+
+    def auto_complete_controller_name
+      current_version = Gem::Version.new(Foreman::Version.new.notag)
+      return '/foreman_dlm/dlmlocks' if current_version >= Gem::Version.new('1.20') && current_version < Gem::Version.new('1.22')
+      controller_name
+    end
+
     private
 
     def action_permission
