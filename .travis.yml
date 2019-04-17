@@ -12,6 +12,8 @@ install:
   - ln -s settings.yaml.test config/settings.yaml
   - ln -s database.yml.example config/database.yml
   - bundle install --jobs=3 --retry=3 --without journald development postgresql mysql2 console journald
+  - npm install
+  - bundle exec rake webpack:compile
   - bundle exec rake db:migrate RAILS_ENV=test
 script:
   - cd ../${FOREMAN_PLUGIN_NAME}
@@ -25,10 +27,10 @@ env:
     - TESTOPTS=-v
     - FOREMAN_PLUGIN_NAME=foreman_dlm
   matrix:
-    - FOREMAN_CORE_BRANCH=1.17-stable
     - FOREMAN_CORE_BRANCH=1.18-stable
     - FOREMAN_CORE_BRANCH=1.19-stable
     - FOREMAN_CORE_BRANCH=1.20-stable
+    - FOREMAN_CORE_BRANCH=1.21-stable
     - FOREMAN_CORE_BRANCH=develop
 addons:
   apt:
