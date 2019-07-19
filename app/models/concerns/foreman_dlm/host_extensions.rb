@@ -19,6 +19,12 @@ module ForemanDlm
       define_model_callbacks :unlock, :only => :after
     end
 
+    def can_acquire_update_locks?
+      param = host_param('can_acquire_update_locks')
+      return true if param.blank?
+      Foreman::Cast.to_bool(param)
+    end
+
     def refresh_dlmlock_status
       refresh_statuses([HostStatus::DlmlockStatus])
     end

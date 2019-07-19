@@ -6,6 +6,24 @@ module Host
     should have_many(:dlmlock_events)
     should have_one(:dlm_facet)
 
+    describe '#can_acquire_update_locks?' do
+      let(:host) { FactoryBot.create(:host, :managed) }
+
+      it 'should be true without a host parameter' do
+        assert host.can_acquire_update_locks?
+      end
+
+      it 'should be true if parameter is true' do
+        FactoryBot.create(:host_parameter, host: host, name: 'can_acquire_update_locks', value: 'true')
+        assert host.can_acquire_update_locks?
+      end
+
+      it 'should be false if parameter is false' do
+        FactoryBot.create(:host_parameter, host: host, name: 'can_acquire_update_locks', value: 'false')
+        refute host.can_acquire_update_locks?
+      end
+    end
+
     context 'scoped search on' do
       context 'a host' do
         let(:host) { FactoryBot.create(:host, :with_dlm_facet) }
