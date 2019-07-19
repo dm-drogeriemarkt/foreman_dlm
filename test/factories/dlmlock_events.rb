@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :dlmlock_event, class: ::ForemanDlm::DlmlockEvent do
     dlmlock
-    event_type 'release'
+    event_type { 'release' }
     host
 
     trait :old_event do
