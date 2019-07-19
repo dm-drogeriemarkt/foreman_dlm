@@ -46,6 +46,7 @@ module ForemanDlm
     attr_accessor :old
 
     def acquire!(host)
+      return false unless host.can_acquire_update_locks?
       result = atomic_update(nil, host)
       ForemanDlm::RefreshDlmlockStatus.set(wait: self.class.dlm_stale_time).perform_later([host.id]) if result
       result

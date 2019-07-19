@@ -82,6 +82,18 @@ module ForemanDlm
         assert dlmlock.acquire!(host)
         assert_equal ['callback1'], host.callbacks
       end
+
+      context 'with a parameter disabeling the locking' do
+        setup do
+          FactoryBot.create(:host_parameter, host: host1, name: 'can_acquire_update_locks', value: 'false')
+        end
+
+        test 'can not be acquired' do
+          assert_nil dlmlock.host
+          refute dlmlock.acquire!(host1)
+          assert_nil dlmlock.reload.host
+        end
+      end
     end
 
     context 'a free and disabled DLM lock' do
