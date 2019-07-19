@@ -33,6 +33,7 @@ env:
     - FOREMAN_CORE_BRANCH=1.21-stable
     - FOREMAN_CORE_BRANCH=develop
 addons:
+  chrome: stable
   apt:
     packages:
     - nodejs
