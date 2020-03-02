@@ -58,7 +58,8 @@ module ForemanDlm
                                           :create_dlmlocks,
                                           :edit_dlmlocks,
                                           :destroy_dlmlocks,
-                                          :view_dlmlock_events]
+                                          :view_dlmlock_events],
+             'Role granting full access permissions to distributed locks'
 
         # add menu entry
         menu :top_menu, :foreman_dlm_dlmlocks,
