@@ -12,7 +12,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.3
+          ruby-version: 2.5
       - name: Setup
         run: |
           gem install bundler
@@ -30,29 +30,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        foreman-core-branch: [1.22-stable, 1.23-stable, 1.24-stable, 2.0-stable, 2.1-stable, develop]
-        ruby-version: [2.3, 2.5, 2.6]
+        foreman-core-branch: [2.0-stable, 2.1-stable, develop]
+        ruby-version: [2.5, 2.6]
         node-version: [10]
-        exclude:
-          - foreman-core-branch: 2.0-stable
-            ruby-version: 2.3
-          - foreman-core-branch: 2.1-stable
-            ruby-version: 2.3
-          - foreman-core-branch: develop
-            ruby-version: 2.3
     steps:
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install build-essential libcurl4-openssl-dev libvirt-dev ruby-libvirt zlib1g-dev libpq-dev
-      - name: Downgrade Chrome to 79
-        run: |
-          sudo wget http://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_79.0.3945.130-1_amd64.deb
-          sudo dpkg -i google-chrome-stable_79.0.3945.130-1_amd64.deb
-          sudo apt-mark hold google-chrome-stable
-          google-chrome-stable --version
-        working-directory: /tmp
-        if: ${{ matrix.foreman-core-branch == '1.22-stable' || matrix.foreman-core-branch == '1.23-stable' || matrix.foreman-core-branch == '1.24-stable' }}
       - uses: actions/checkout@v2
         with:
           repository: theforeman/foreman
@@ -72,7 +57,7 @@ jobs:
         run: |
           echo "gem 'foreman_dlm', path: './foreman_dlm'" > bundler.d/foreman_dlm.local.rb
           gem install bundler
-          bundle config set without journald development console mysql2 sqlite
+          bundle config set without journald development console sqlite
           bundle install --jobs=3 --retry=3
           bundle exec rake db:create
           bundle exec rake db:migrate
