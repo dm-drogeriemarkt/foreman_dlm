@@ -6,14 +6,6 @@ module ForemanDlm
     config.autoload_paths += Dir["#{config.root}/app/models/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/jobs"]
 
-    initializer 'foreman_dlm.load_default_settings', before: :load_config_initializers do
-      require_dependency File.expand_path('../../app/models/setting/dlm.rb', __dir__) if begin
-        Setting.table_exists?
-      rescue StandardError
-        (false)
-      end
-    end
-
     # Add any db migrations
     initializer 'foreman_dlm.load_app_instance_data' do |app|
       ForemanDlm::Engine.paths['db/migrate'].existent.each do |path|
@@ -23,9 +15,20 @@ module ForemanDlm
 
     initializer 'foreman_dlm.register_plugin', :before => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_dlm do
-        requires_foreman '>= 2.3'
+        requires_foreman '>= 3.0'
 
         apipie_documented_controllers ["#{ForemanDlm::Engine.root}/app/controllers/api/v2/*.rb"]
+
+        settings do
+          category(:general) do
+            setting('dlm_stale_time',
+                    type: :integer,
+                    default: 4,
+                    description: N_('Number of hours after which locked Distributed Lock is stale'),
+                    full_name: N_('Distributed Lock stale time'),
+                    validate: { numericality: { greater_than: 0 } })
+          end
+        end
 
         # Add permissions
         security_block :foreman_dlm do

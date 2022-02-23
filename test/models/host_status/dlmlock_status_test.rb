@@ -3,10 +3,6 @@
 require 'test_plugin_helper'
 
 class DlmlockStatusTest < ActiveSupport::TestCase
-  setup do
-    FactoryBot.create(:setting, category: Setting::General, name: 'dlm_stale_time', value: 4)
-  end
-
   let(:host) { FactoryBot.create(:host, :managed) }
 
   describe '#to_status' do
