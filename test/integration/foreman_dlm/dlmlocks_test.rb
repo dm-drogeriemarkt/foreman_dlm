@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require 'integration_test_plugin_helper'
+require 'test_plugin_helper'
+require 'integration_test_helper'
 
 class DlmlocksTest < IntegrationTestWithJavascript
   setup do
-    Setting::Dlm.load_defaults
     User.current = users(:admin)
+    Setting::Dlm.load_defaults
   end
 
   test 'the index page works' do
