@@ -1,10 +1,20 @@
+inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-rails
+  - rubocop-performance
+
 AllCops:
-  TargetRubyVersion: 2.2
+  TargetRubyVersion: 2.7
   TargetRailsVersion: 5.1
+  NewCops: enable
   Exclude:
     - '*.spec'
     - 'Rakefile'
-
+    - 'extras/**/*'
+    - 'locale/**/*'
+    - 'node_modules/**/*'
+    - 'vendor/bundle/**/*'
 Rails:
   Enabled: true
 
@@ -15,7 +25,7 @@ Style/Documentation:
 Metrics/MethodLength:
   Max: 40
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 190
 
 Style/WordArray:
@@ -51,7 +61,6 @@ Performance/FixedSize:
     - 'test/**/*'
 
 Metrics/BlockLength:
-  ExcludedMethods: ['describe', 'context']
   Exclude:
     - 'config/routes.rb'
     - 'lib/foreman_dlm/engine.rb'

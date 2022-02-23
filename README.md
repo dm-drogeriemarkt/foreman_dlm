@@ -14,6 +14,7 @@ With this plugin servers can acquire a lock in Foreman to ensure only one server
 | --------------- | -------------- |
 | >= 1.15         | ~> 0.1         |
 | >= 1.17         | ~> 1.0         |
+| >= 2.3          | ~> 2.0         |
 
 ## Installation
 
@@ -34,6 +35,7 @@ Use the HTTP method `GET` to show a lock, `PUT` to acquire a lock and `DELETE` t
 Foreman will respond with the HTTP status code `200 OK` if the action was successful and `412 Precondition Failed` if the lock could not be acquired or release. This may happen, if the lock is taken by another host.
 
 To process the HTTP status code in a bash script, you can do something like this:
+
 ```
 curl --write-out %{http_code} -H 'Content-Type: application/json' -sS -o /dev/null -X PUT --key $(puppet config print hostprivkey) --cert $(puppet config print hostcert) https://foreman.example.com/api/dlmlocks/test/lock
 ```
@@ -59,16 +61,18 @@ $ brew link curl --force
 ```
 
 After that `curl --version` changes from
+
 ```
 $ curl --version
 curl 7.54.0 (x86_64-apple-darwin16.0) libcurl/7.54.0 SecureTransport zlib/1.2.8
 ```
+
 to
+
 ```
 $ curl --version
 curl 7.56.1 (x86_64-apple-darwin16.7.0) libcurl/7.56.1 OpenSSL/1.0.2m zlib/1.2.8
 ```
-
 
 ## Contributing
 
@@ -85,9 +89,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+along with this program. If not, see <http://www.gnu.org/licenses/>.
