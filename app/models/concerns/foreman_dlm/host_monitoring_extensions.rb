@@ -9,6 +9,7 @@ module ForemanDlm
 
     def add_lock_monitoring_downtime
       return unless monitored?
+
       logger.info "Setting Monitoring downtime for #{self}"
       monitoring.set_downtime_host(self, lock_monitoring_downtime_options)
       true
@@ -18,6 +19,7 @@ module ForemanDlm
 
     def remove_lock_monitoring_downtime
       return unless monitored?
+
       logger.info "Deleting Monitoring downtime for #{self}"
       monitoring.del_downtime_host(self, lock_monitoring_downtime_options)
       true

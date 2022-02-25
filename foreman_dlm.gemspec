@@ -1,4 +1,4 @@
-require File.expand_path('../lib/foreman_dlm/version', __FILE__)
+require File.expand_path('lib/foreman_dlm/version', __dir__)
 
 Gem::Specification.new do |s|
   s.name        = 'foreman_dlm'
@@ -21,6 +21,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rdoc'
   s.add_development_dependency 'rubocop', '~> 1.25.0'
-  s.add_development_dependency 'rubocop-rails', '~> 2.9.1'
   s.add_development_dependency 'rubocop-performance', '~> 1.13.0'
+  s.add_development_dependency 'rubocop-rails', '~> 2.9.1'
 end

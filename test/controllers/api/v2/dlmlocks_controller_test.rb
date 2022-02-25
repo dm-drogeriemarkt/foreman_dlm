@@ -44,7 +44,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         get :show, params: { :id => dlmlock.to_param }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
-        refute_empty body
+        assert_not_empty body
         assert_equal dlmlock.name, body['name']
         assert_equal dlmlock.type, body['type']
         assert_equal true, body['enabled']
@@ -56,7 +56,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         get :show, params: { :id => dlmlock.to_param }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
-        refute_empty body
+        assert_not_empty body
         assert_equal dlmlock.name, body['name']
         assert_equal dlmlock.type, body['type']
         assert_equal false, body['enabled']
@@ -68,13 +68,13 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         get :show, params: { :id => dlmlock.name }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
-        refute_empty body
+        assert_not_empty body
         assert_equal dlmlock.id, body['id']
         assert_equal dlmlock.name, body['name']
         host = body['host']
         assert host
         assert_equal host1.name, host['name']
-        refute host.key?('self')
+        assert_not host.key?('self')
       end
 
       test 'should not find dlmlock with invalid id' do
@@ -178,7 +178,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         get :show, params: { :id => dlmlock.to_param }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
-        refute_empty body
+        assert_not_empty body
         assert_equal dlmlock.name, body['name']
         assert_equal dlmlock.type, body['type']
         assert_equal true, body['enabled']
@@ -191,7 +191,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         get :show, params: { :id => dlmlock.to_param }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
-        refute_empty body
+        assert_not_empty body
         assert_equal dlmlock.name, body['name']
         assert_equal dlmlock.type, body['type']
         assert_equal true, body['enabled']
@@ -207,7 +207,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         get :show, params: { :id => dlmlock.to_param }
         assert_response :success
         body = ActiveSupport::JSON.decode(@response.body)
-        refute_empty body
+        assert_not_empty body
         assert_equal dlmlock.name, body['name']
         assert_equal dlmlock.type, body['type']
         assert_equal true, body['enabled']
@@ -220,7 +220,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
 
       test 'should update checkin time' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        refute as_admin { host1.dlm_facet }
+        assert_not as_admin { host1.dlm_facet }
         put :show, params: { :id => dlmlock.to_param }
         assert as_admin { host1.reload.dlm_facet.last_checkin_at }
       end
@@ -260,7 +260,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
 
       test 'should update checkin time' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        refute as_admin { host1.dlm_facet }
+        assert_not as_admin { host1.dlm_facet }
         put :acquire, params: { :id => dlmlock.to_param }
         assert as_admin { host1.reload.dlm_facet.last_checkin_at }
       end
@@ -300,7 +300,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
 
       test 'should update checkin time' do
         dlmlock = as_admin { FactoryBot.create(:dlmlock) }
-        refute as_admin { host1.dlm_facet }
+        assert_not as_admin { host1.dlm_facet }
         put :release, params: { :id => dlmlock.to_param }
         assert as_admin { host1.reload.dlm_facet.last_checkin_at }
       end

@@ -14,7 +14,6 @@ module ForemanDlm
 
     has_many :dlmlock_events,
              class_name: '::ForemanDlm::DlmlockEvent',
-             foreign_key: 'dlmlock_id',
              dependent: :destroy,
              inverse_of: :dlmlock
 
@@ -47,6 +46,7 @@ module ForemanDlm
 
     def acquire!(host)
       return false unless host.can_acquire_update_locks?
+
       result = atomic_update(nil, host)
       ForemanDlm::RefreshDlmlockStatus.set(wait: self.class.dlm_stale_time).perform_later([host.id]) if result
       result

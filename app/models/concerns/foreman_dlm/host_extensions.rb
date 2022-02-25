@@ -22,6 +22,7 @@ module ForemanDlm
     def can_acquire_update_locks?
       param = host_param('can_acquire_update_locks')
       return true if param.blank?
+
       Foreman::Cast.to_bool(param)
     end
 

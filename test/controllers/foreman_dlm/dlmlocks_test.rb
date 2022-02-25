@@ -27,7 +27,7 @@ module ForemanDlm
       dlmlock = FactoryBot.create(:dlmlock)
       delete :destroy, params: { :id => dlmlock.id }, session: set_session_user
       assert_redirected_to foreman_dlm_dlmlocks_url
-      refute Dlmlock.exists?(dlmlock.id)
+      assert_not Dlmlock.exists?(dlmlock.id)
     end
 
     test '#enable' do
@@ -49,7 +49,7 @@ module ForemanDlm
       dlmlock = FactoryBot.create(:dlmlock, host: host)
       put :release, params: { :id => dlmlock.id }, session: set_session_user
       assert_redirected_to foreman_dlm_dlmlocks_url
-      refute dlmlock.reload.taken?
+      assert_not dlmlock.reload.taken?
     end
   end
 end

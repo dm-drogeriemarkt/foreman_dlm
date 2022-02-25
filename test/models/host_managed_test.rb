@@ -20,7 +20,7 @@ module Host
 
       it 'should be false if parameter is false' do
         FactoryBot.create(:host_parameter, host: host, name: 'can_acquire_update_locks', value: 'false')
-        refute host.can_acquire_update_locks?
+        assert_not host.can_acquire_update_locks?
       end
     end
 
