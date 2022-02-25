@@ -13,6 +13,7 @@ module ForemanDlm
     # Updates the last_checkin timestamp of a user
     def update_detected_host_checkin_time
       return unless @detected_host
+
       facet = @detected_host.dlm_facet || @detected_host.build_dlm_facet
       facet.save unless facet.persisted?
       facet.touch(:last_checkin_at)

@@ -22,6 +22,7 @@ module ForemanDlm
           total_count += count
 
           break if event_ids.blank?
+
           sleep sleep_time
         end
         duration = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time) / 60).to_i

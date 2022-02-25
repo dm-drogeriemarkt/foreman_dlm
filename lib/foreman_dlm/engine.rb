@@ -8,10 +8,10 @@ module ForemanDlm
 
     initializer 'foreman_dlm.load_default_settings', before: :load_config_initializers do
       require_dependency File.expand_path('../../app/models/setting/dlm.rb', __dir__) if begin
-                                                                                         Setting.table_exists?
-                                                                                       rescue StandardError
-                                                                                         (false)
-                                                                                       end
+        Setting.table_exists?
+      rescue StandardError
+        (false)
+      end
     end
 
     # Add any db migrations
@@ -87,19 +87,17 @@ module ForemanDlm
 
     # Include concerns in this config.to_prepare block
     config.to_prepare do
-      begin
-        Host::Managed.send(:include, ForemanDlm::HostExtensions)
-        User.send(:include, ForemanDlm::UserExtensions)
-        Host::Managed.send(:include, ForemanDlm::DlmFacetHostExtensions)
+      Host::Managed.include ForemanDlm::HostExtensions
+      User.include ForemanDlm::UserExtensions
+      Host::Managed.include ForemanDlm::DlmFacetHostExtensions
 
-        Host::Managed.send(:include, ForemanDlm::HostMonitoringExtensions) if ForemanDlm.with_monitoring?
-      rescue StandardError => e
-        Rails.logger.warn "ForemanDlm: skipping engine hook (#{e})"
-      end
+      Host::Managed.include ForemanDlm::HostMonitoringExtensions if ForemanDlm.with_monitoring?
+    rescue StandardError => e
+      Rails.logger.warn "ForemanDlm: skipping engine hook (#{e})"
     end
 
     initializer 'foreman_dlm.register_gettext', after: :load_config_initializers do |_app|
-      locale_dir = File.join(File.expand_path('../../..', __FILE__), 'locale')
+      locale_dir = File.join(File.expand_path('../..', __dir__), 'locale')
       locale_domain = 'foreman_dlm'
       Foreman::Gettext::Support.add_text_domain locale_domain, locale_dir
     end

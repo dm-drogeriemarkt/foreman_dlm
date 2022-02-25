@@ -34,6 +34,7 @@ module Api
       def resource_class_for(resource)
         return ForemanDlm::Dlmlock if resource == 'dlmlock'
         return ForemanDlm::DlmlockEvent if resource == 'dlmlock_event'
+
         super
       end
     end

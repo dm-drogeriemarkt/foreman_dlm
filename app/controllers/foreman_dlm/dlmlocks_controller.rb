@@ -64,6 +64,7 @@ module ForemanDlm
     def auto_complete_controller_name
       current_version = Gem::Version.new(Foreman::Version.new.notag)
       return '/foreman_dlm/dlmlocks' if current_version >= Gem::Version.new('1.20') && current_version < Gem::Version.new('1.22')
+
       controller_name
     end
 

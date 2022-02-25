@@ -90,7 +90,7 @@ module ForemanDlm
 
         test 'can not be acquired' do
           assert_nil dlmlock.host
-          refute dlmlock.acquire!(host1)
+          assert_not dlmlock.acquire!(host1)
           assert_nil dlmlock.reload.host
         end
       end
@@ -224,7 +224,7 @@ module ForemanDlm
         not_locked = FactoryBot.create(:dlmlock)
 
         assert_includes subject, locked
-        refute_includes subject, not_locked
+        assert_not_includes subject, not_locked
       end
     end
 
@@ -244,8 +244,8 @@ module ForemanDlm
           not_locked = FactoryBot.create(:dlmlock)
 
           assert_includes subject, stale
-          refute_includes subject, not_stale
-          refute_includes subject, not_locked
+          assert_not_includes subject, not_stale
+          assert_not_includes subject, not_locked
         end
       end
     end

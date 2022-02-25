@@ -73,7 +73,7 @@ module Api
 
         == Authentication & Host Identification
         The host is authenticated via a client certificate and identified via the CN of that certificate.
-        DOCS
+      DOCS
 
       def acquire
         process_lock_response @dlmlock.acquire!(@host)
@@ -91,7 +91,7 @@ module Api
 
         == Authentication & Host Identification
          The host is authenticated via a client certificate and identified via the CN of that certificate.
-        DOCS
+      DOCS
 
       def release
         process_lock_response @dlmlock.release!(@host)
@@ -108,6 +108,7 @@ module Api
       rescue ActiveRecord::RecordNotFound
         result = scope.find_by(:name => id)
         raise ActiveRecord::RecordNotFound unless result
+
         result
       end
 

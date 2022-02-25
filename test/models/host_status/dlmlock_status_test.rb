@@ -17,7 +17,7 @@ class DlmlockStatusTest < ActiveSupport::TestCase
         FactoryBot.create(:dlmlock, :locked, host: host, updated_at: now - 5.hours)
         status = host.get_status(HostStatus::DlmlockStatus)
 
-        refute_empty host.dlmlocks.stale
+        assert_not_empty host.dlmlocks.stale
         assert_equal HostStatus::DlmlockStatus::STALE, status.to_status
       end
     end
@@ -35,7 +35,7 @@ class DlmlockStatusTest < ActiveSupport::TestCase
       FactoryBot.create(:dlmlock, host: host)
       status = host.get_status(HostStatus::DlmlockStatus)
 
-      refute_empty host.dlmlocks
+      assert_not_empty host.dlmlocks
       assert_equal true, status.relevant?
     end
 
