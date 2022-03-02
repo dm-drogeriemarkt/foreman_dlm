@@ -7,7 +7,7 @@ module ForemanDlm
     end
 
     def self.dlm_stale_time
-      (Setting::General[:dlm_stale_time] || 4).hours
+      (Setting[:dlm_stale_time] || 4).hours
     end
 
     belongs_to_host

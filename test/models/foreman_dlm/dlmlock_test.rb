@@ -229,10 +229,6 @@ module ForemanDlm
     end
 
     describe '#stale' do
-      setup do
-        FactoryBot.create(:setting, category: Setting::General, name: 'dlm_stale_time', value: 4)
-      end
-
       subject { Dlmlock.stale }
 
       it 'includes only Distributed Locks that are stale' do

@@ -6,7 +6,6 @@ require 'integration_test_helper'
 class DlmlocksTest < IntegrationTestWithJavascript
   setup do
     User.current = users(:admin)
-    Setting::Dlm.load_defaults
   end
 
   test 'the index page works' do
