@@ -1,84 +1,32 @@
-name: CI
-on: [push, pull_request]
-env:
-  RAILS_ENV: test
-  DATABASE_URL: postgresql://postgres:@localhost/test
-  DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL: true
+name: Ruby test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   rubocop:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7
-      - name: Setup
-        run: |
-          gem install bundler
-          bundle install --jobs=3 --retry=3
-      - name: Run rubocop
-        run: bundle exec rubocop
+    uses: theforeman/actions/.github/workflows/rubocop.yml@v0
+    with:
+      command: bundle exec rubocop --parallel --format github
+
   test:
-    runs-on: ubuntu-latest
+    name: Ruby
     needs: rubocop
-    services:
-      postgres:
-        image: postgres:12.1
-        ports: ["5432:5432"]
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     strategy:
       fail-fast: false
       matrix:
-        foreman-core-branch: [3.0-stable, 3.1-stable, 3.2-stable, develop]
-        ruby-version: [2.7]
-        node-version: [12]
-    steps:
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential libcurl4-openssl-dev libvirt-dev ruby-libvirt zlib1g-dev libpq-dev
-      - uses: actions/checkout@v2
-        with:
-          clean: false
-          repository: theforeman/foreman
-          ref: ${{ matrix.foreman-core-branch }}
-          fetch-depth: 0
-      - uses: actions/checkout@v2
-        with:
-          clean: false
-          path: foreman_dlm
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby-version }}
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version:  ${{ matrix.node-version }}
-      - name: Setup Plugin
-        run: |
-          echo "gem 'foreman_dlm', path: './foreman_dlm'" > bundler.d/foreman_dlm.local.rb
-          gem install bundler
-          bundle config set without journald development console sqlite
-          bundle install --jobs=3 --retry=3
-          bundle exec rake db:create
-          bundle exec rake db:migrate
-          npm install
-          bundle exec rake webpack:compile
-      - name: Run plugin tests
-        uses: nick-fields/retry@v2
-        with:
-          max_attempts: 5
-          timeout_minutes: 30
-          command: |
-            bundle exec rake --trace test:foreman_dlm
-            bundle exec rake test TEST="test/unit/foreman/access_permissions_test.rb"
-      - name: Precompile plugin assets
-        run: |
-          bundle exec rake db:create
-          bundle exec rake db:migrate
-          bundle exec rake 'plugin:assets:precompile[foreman_dlm]'
-        env:
-          DATABASE_URL: postgresql://postgres:@localhost/production
-          RAILS_ENV: production
+        foreman:
+          - 'develop'
+          - '3.9-stable'
+          - '3.8-stable'
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    with:
+      plugin: foreman_dlm
+      foreman_version: ${{ matrix.foreman }}
