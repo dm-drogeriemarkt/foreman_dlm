@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :dlmlock, class: ::ForemanDlm::Dlmlock::Update do
     sequence(:name) { |n| "Lock #{n}" }

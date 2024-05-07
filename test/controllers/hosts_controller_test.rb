@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_plugin_helper'
 
 class HostsControllerTest < ActionController::TestCase
@@ -7,6 +9,6 @@ class HostsControllerTest < ActionController::TestCase
     FactoryBot.create_list(:dlmlock, 2, host: host)
     get :show, params: { :id => host.to_param }, session: set_session_user
     assert_response :success
-    assert @response.body.match(/id='pagelet-id-locks'/)
+    assert_match(/id='pagelet-id-locks'/, @response.body)
   end
 end

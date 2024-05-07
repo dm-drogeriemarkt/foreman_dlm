@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ForemanDlm
   class Engine < ::Rails::Engine
     engine_name 'foreman_dlm'
@@ -22,11 +24,11 @@ module ForemanDlm
         settings do
           category(:general) do
             setting('dlm_stale_time',
-                    type: :integer,
-                    default: 4,
-                    description: N_('Number of hours after which locked Distributed Lock is stale'),
-                    full_name: N_('Distributed Lock stale time'),
-                    validate: { numericality: { greater_than: 0 } })
+              type: :integer,
+              default: 4,
+              description: N_('Number of hours after which locked Distributed Lock is stale'),
+              full_name: N_('Distributed Lock stale time'),
+              validate: { numericality: { greater_than: 0 } })
           end
         end
 
@@ -34,25 +36,25 @@ module ForemanDlm
         security_block :foreman_dlm do
           permission :view_dlmlocks, {
             :'foreman_dlm/dlmlocks' => [:index, :show, :auto_complete_search],
-            :'api/v2/dlmlocks' => [:index, :show]
+            :'api/v2/dlmlocks' => [:index, :show],
           }, :resource_type => 'ForemanDlm::Dlmlock'
 
           permission :create_dlmlocks, {
-            :'api/v2/dlmlocks' => [:create]
+            :'api/v2/dlmlocks' => [:create],
           }, :resource_type => 'ForemanDlm::Dlmlock'
 
           permission :edit_dlmlocks, {
             :'foreman_dlm/dlmlocks' => [:release, :enable, :disable],
-            :'api/v2/dlmlocks' => [:update, :acquire, :release]
+            :'api/v2/dlmlocks' => [:update, :acquire, :release],
           }, :resource_type => 'ForemanDlm::Dlmlock'
 
           permission :destroy_dlmlocks, {
             :'foreman_dlm/dlmlocks' => [:destroy],
-            :'api/v2/dlmlocks' => [:destroy]
+            :'api/v2/dlmlocks' => [:destroy],
           }, :resource_type => 'ForemanDlm::Dlmlock'
 
           permission :view_dlmlock_events, {
-            :'api/v2/dlmlock_events' => [:index]
+            :'api/v2/dlmlock_events' => [:index],
           }, :resource_type => 'ForemanDlm::DlmlockEvent'
         end
 
@@ -62,14 +64,14 @@ module ForemanDlm
                                           :edit_dlmlocks,
                                           :destroy_dlmlocks,
                                           :view_dlmlock_events],
-             'Role granting full access permissions to distributed locks'
+          'Role granting full access permissions to distributed locks'
 
         # add menu entry
         menu :top_menu, :foreman_dlm_dlmlocks,
-             url_hash: { controller: :'foreman_dlm/dlmlocks', action: :index },
-             caption: N_('Distributed Locks'),
-             parent: :monitor_menu,
-             after: :audits
+          url_hash: { controller: :'foreman_dlm/dlmlocks', action: :index },
+          caption: N_('Distributed Locks'),
+          parent: :monitor_menu,
+          after: :audits
 
         # Dlm Facet
         register_facet(ForemanDlm::DlmFacet, :dlm_facet) do
@@ -81,9 +83,9 @@ module ForemanDlm
         # extend host show page
         extend_page('hosts/show') do |context|
           context.add_pagelet :main_tabs,
-                              :name => N_('Locks'),
-                              :partial => 'hosts/dlmlocks_tab',
-                              :onlyif => proc { |host| host.dlm_facet }
+            :name => N_('Locks'),
+            :partial => 'hosts/dlmlocks_tab',
+            :onlyif => proc { |host| host.dlm_facet }
         end
       end
     end

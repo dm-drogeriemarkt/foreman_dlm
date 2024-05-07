@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ForemanDlm
   module FindHostByClientCert
     extend ActiveSupport::Concern

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ForemanDlm
   module DlmlockHelper
     def dlmlock_status_icon_class(lock)

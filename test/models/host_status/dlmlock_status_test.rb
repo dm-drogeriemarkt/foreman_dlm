@@ -32,14 +32,14 @@ class DlmlockStatusTest < ActiveSupport::TestCase
       status = host.get_status(HostStatus::DlmlockStatus)
 
       assert_not_empty host.dlmlocks
-      assert_equal true, status.relevant?
+      assert status.relevant?
     end
 
     test 'should return false if host has no dlmlocks' do
       status = host.get_status(HostStatus::DlmlockStatus)
 
       assert_empty host.dlmlocks
-      assert_equal false, status.relevant?
+      assert_not status.relevant?
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ForemanDlm
   class DlmlocksController < ::ForemanDlm::ApplicationController
     include ::Foreman::Controller::AutoCompleteSearch
@@ -9,7 +11,8 @@ module ForemanDlm
       @dlmlocks = resource_base_search_and_page(:host)
     end
 
-    def show; end
+    def show
+    end
 
     def destroy
       if @dlmlock.destroy
@@ -57,15 +60,6 @@ module ForemanDlm
 
     def model_of_controller
       ForemanDlm::Dlmlock
-    end
-
-    # see https://projects.theforeman.org/issues/25976
-    # can be removed for Foreman 1.22+
-    def auto_complete_controller_name
-      current_version = Gem::Version.new(Foreman::Version.new.notag)
-      return '/foreman_dlm/dlmlocks' if current_version >= Gem::Version.new('1.20') && current_version < Gem::Version.new('1.22')
-
-      controller_name
     end
 
     private

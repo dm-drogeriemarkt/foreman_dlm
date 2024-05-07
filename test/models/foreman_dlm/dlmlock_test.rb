@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_plugin_helper'
 
 module ForemanDlm
@@ -45,10 +47,10 @@ module ForemanDlm
       let(:dlmlock) { FactoryBot.create(:dlmlock) }
 
       test 'should be enabled and unlocked' do
-        assert_equal true, dlmlock.enabled?
-        assert_equal false, dlmlock.disabled?
-        assert_equal false, dlmlock.locked?
-        assert_equal false, dlmlock.taken?
+        assert dlmlock.enabled?
+        assert_not dlmlock.disabled?
+        assert_not dlmlock.locked?
+        assert_not dlmlock.taken?
       end
 
       test 'can be acquired' do
@@ -100,21 +102,21 @@ module ForemanDlm
       let(:dlmlock) { FactoryBot.create(:dlmlock, :enabled => false) }
 
       test 'should be disabled and unlocked' do
-        assert_equal false, dlmlock.enabled?
-        assert_equal true, dlmlock.disabled?
-        assert_equal false, dlmlock.locked?
-        assert_equal false, dlmlock.taken?
+        assert_not dlmlock.enabled?
+        assert dlmlock.disabled?
+        assert_not dlmlock.locked?
+        assert_not dlmlock.taken?
       end
 
       test 'can not be acquired' do
         assert_nil dlmlock.host
-        assert_equal false, dlmlock.acquire!(host1)
+        assert_not dlmlock.acquire!(host1)
         assert_nil dlmlock.reload.host
       end
 
       test 'can not be released' do
         assert_nil dlmlock.host
-        assert_equal false, dlmlock.release!(host1)
+        assert_not dlmlock.release!(host1)
         assert_nil dlmlock.reload.host
       end
 
@@ -122,8 +124,8 @@ module ForemanDlm
         host = HostWithCallbacks.new
         host.name = 'test.example.com'
         host.save
-        assert_equal false, dlmlock.release!(host)
-        assert_equal [], host.callbacks
+        assert_not dlmlock.release!(host)
+        assert_empty host.callbacks
       end
     end
 
@@ -131,12 +133,12 @@ module ForemanDlm
       let(:dlmlock) { FactoryBot.create(:dlmlock, :host => host1) }
 
       test 'should be enabled and locked' do
-        assert_equal true, dlmlock.enabled?
-        assert_equal false, dlmlock.disabled?
-        assert_equal true, dlmlock.locked?
-        assert_equal true, dlmlock.taken?
-        assert_equal true, dlmlock.locked_by?(host1)
-        assert_equal true, dlmlock.acquired_by?(host1)
+        assert dlmlock.enabled?
+        assert_not dlmlock.disabled?
+        assert dlmlock.locked?
+        assert dlmlock.taken?
+        assert dlmlock.locked_by?(host1)
+        assert dlmlock.acquired_by?(host1)
       end
 
       test 'can be acquired by owner' do
@@ -147,7 +149,7 @@ module ForemanDlm
 
       test 'can not be acquired by other host' do
         assert_equal host1, dlmlock.host
-        assert_equal false, dlmlock.acquire!(host2)
+        assert_not dlmlock.acquire!(host2)
         assert_equal host1, dlmlock.reload.host
       end
 
@@ -159,7 +161,7 @@ module ForemanDlm
 
       test 'can not be released by other host' do
         assert_equal host1, dlmlock.host
-        assert_equal false, dlmlock.release!(host2)
+        assert_not dlmlock.release!(host2)
         assert_equal host1, dlmlock.reload.host
       end
 
@@ -196,16 +198,16 @@ module ForemanDlm
         assert host1_with_callbacks
         assert host2_with_callbacks
         dlmlock.update(:host => host1_with_callbacks)
-        assert_equal false, dlmlock.release!(host2_with_callbacks)
-        assert_equal [], host1_with_callbacks.callbacks
-        assert_equal [], host2_with_callbacks.callbacks
+        assert_not dlmlock.release!(host2_with_callbacks)
+        assert_empty host1_with_callbacks.callbacks
+        assert_empty host2_with_callbacks.callbacks
       end
 
       test 'triggers no callbacks on acquiry attempt by owner' do
         assert host1_with_callbacks
         dlmlock.update(:host => host1_with_callbacks)
         assert dlmlock.acquire!(host1_with_callbacks)
-        assert_equal [], host1_with_callbacks.callbacks
+        assert_empty host1_with_callbacks.callbacks
       end
     end
 

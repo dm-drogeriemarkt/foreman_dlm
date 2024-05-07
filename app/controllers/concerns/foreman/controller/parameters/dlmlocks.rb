@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Foreman::Controller::Parameters::Dlmlocks
   extend ActiveSupport::Concern
 

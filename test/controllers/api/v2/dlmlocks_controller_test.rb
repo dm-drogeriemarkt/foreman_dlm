@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_plugin_helper'
 
 class Api::V2::DlmlocksControllerTest < ActionController::TestCase
@@ -33,7 +35,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         assert dlmlock
         assert_equal valid_attrs['name'], dlmlock.name
         assert_equal valid_attrs['type'], dlmlock.type
-        assert_equal true, dlmlock.enabled
+        assert dlmlock.enabled
         assert_nil dlmlock.host
       end
     end
@@ -47,7 +49,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         assert_not_empty body
         assert_equal dlmlock.name, body['name']
         assert_equal dlmlock.type, body['type']
-        assert_equal true, body['enabled']
+        assert body['enabled']
         assert_equal host1.id, body['host_id']
       end
 
@@ -59,7 +61,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         assert_not_empty body
         assert_equal dlmlock.name, body['name']
         assert_equal dlmlock.type, body['type']
-        assert_equal false, body['enabled']
+        assert_not body['enabled']
         assert_nil body['host_id']
       end
 
@@ -91,7 +93,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         dlmlock.reload
         assert_equal valid_attrs['name'], dlmlock.name
         assert_equal valid_attrs['type'], dlmlock.type
-        assert_equal false, dlmlock.enabled
+        assert_not dlmlock.enabled
         assert_equal host1.id, dlmlock.host_id
       end
     end
@@ -181,7 +183,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         assert_not_empty body
         assert_equal dlmlock.name, body['name']
         assert_equal dlmlock.type, body['type']
-        assert_equal true, body['enabled']
+        assert body['enabled']
         assert_nil body['host_id']
         assert_nil body['host']
       end
@@ -194,12 +196,12 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         assert_not_empty body
         assert_equal dlmlock.name, body['name']
         assert_equal dlmlock.type, body['type']
-        assert_equal true, body['enabled']
+        assert body['enabled']
         assert_equal host1.id, body['host_id']
         host = body['host']
         assert host
         assert_equal host1.name, host['name']
-        assert_equal true, host['self']
+        assert host['self']
       end
 
       test 'should show individual acquired lock by other' do
@@ -210,12 +212,12 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
         assert_not_empty body
         assert_equal dlmlock.name, body['name']
         assert_equal dlmlock.type, body['type']
-        assert_equal true, body['enabled']
+        assert body['enabled']
         assert_equal host2.id, body['host_id']
         host = body['host']
         assert host
         assert_equal host2.name, host['name']
-        assert_equal false, host['self']
+        assert_not host['self']
       end
 
       test 'should update checkin time' do
@@ -378,7 +380,7 @@ class Api::V2::DlmlocksControllerTest < ActionController::TestCase
   def valid_attrs
     {
       'name' => 'testlock',
-      'type' => 'ForemanDlm::Dlmlock::Update'
+      'type' => 'ForemanDlm::Dlmlock::Update',
     }
   end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ForemanDlm
   class DlmlockEvent < ApplicationRecord
     include Authorizable

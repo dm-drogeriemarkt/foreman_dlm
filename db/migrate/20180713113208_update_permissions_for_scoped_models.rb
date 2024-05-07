@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdatePermissionsForScopedModels < ActiveRecord::Migration[5.1]
   class FakePermission < ApplicationRecord
     self.table_name = 'permissions'

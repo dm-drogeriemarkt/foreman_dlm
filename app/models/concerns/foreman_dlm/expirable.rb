@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ForemanDlm
   module Expirable
     extend ActiveSupport::Concern
