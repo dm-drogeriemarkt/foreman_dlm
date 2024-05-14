@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ForemanDlm
   class RefreshDlmlockStatus < ApplicationJob
     queue_as :refresh_dlmlock_status_queue

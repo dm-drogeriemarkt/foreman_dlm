@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 object controller.get_resource
 
 attributes :id

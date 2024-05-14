@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ForemanDlm
   module HostMonitoringExtensions
     extend ActiveSupport::Concern
@@ -31,7 +33,7 @@ module ForemanDlm
       {
         comment: _('Host acquired lock.'),
         start_time: Time.current.to_i,
-        end_time: Time.current.advance(:minutes => 180).to_i
+        end_time: Time.current.advance(:minutes => 180).to_i,
       }
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V2
     class DlmlockEventsController < V2::BaseController

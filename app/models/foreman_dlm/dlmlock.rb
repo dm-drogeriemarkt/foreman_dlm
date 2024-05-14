@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ForemanDlm
   class Dlmlock < ApplicationRecord
     include Authorizable
@@ -13,9 +15,9 @@ module ForemanDlm
     belongs_to_host
 
     has_many :dlmlock_events,
-             class_name: '::ForemanDlm::DlmlockEvent',
-             dependent: :destroy,
-             inverse_of: :dlmlock
+      class_name: '::ForemanDlm::DlmlockEvent',
+      dependent: :destroy,
+      inverse_of: :dlmlock
 
     validates :name, presence: true, uniqueness: true
 
@@ -67,7 +69,7 @@ module ForemanDlm
     def locked_by?(host)
       self.host == host
     end
-    alias acquired_by? locked_by?
+    alias_method :acquired_by?, :locked_by?
 
     def disabled?
       !enabled?
@@ -76,7 +78,7 @@ module ForemanDlm
     def locked?
       host.present?
     end
-    alias taken? locked?
+    alias_method :taken?, :locked?
 
     def humanized_type
       _('Generic Lock')
@@ -91,7 +93,7 @@ module ForemanDlm
       query = {
         id: id,
         host_id: [new_host.try(:id), old_host.try(:id)],
-        enabled: true
+        enabled: true,
       }
 
       updated = self.class.where(query).update(changes.merge(updated_at: Time.now.utc))
@@ -127,9 +129,9 @@ module ForemanDlm
       )
     end
 
-    def run_callback(h, callback)
-      h.run_callbacks callback do
-        logger.debug { "custom hook after_#{callback} on #{h} will be executed if defined." }
+    def run_callback(host, callback)
+      host.run_callbacks callback do
+        logger.debug { "custom hook after_#{callback} on #{host} will be executed if defined." }
         true
       end
     end

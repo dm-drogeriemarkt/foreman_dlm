@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V2
     class DlmlocksController < V2::BaseController
@@ -37,7 +39,8 @@ module Api
       error 404, 'Lock could not be found.'
       param :id, String, :required => true, :desc => N_('Id or name of the DLM lock')
 
-      def show; end
+      def show
+      end
 
       api :POST, '/dlmlocks', N_('Create a DLM lock')
       param_group :dlmlock, :as => :create
@@ -52,7 +55,7 @@ module Api
       param_group :dlmlock
 
       def update
-        process_response @dlmlock.update_attributes(dlmlocks_params)
+        process_response @dlmlock.update(dlmlocks_params)
       end
 
       api :DELETE, '/dlmlocks/:id/', N_('Delete a DLM lock')
@@ -133,16 +136,16 @@ module Api
           logger.info 'Denying access because no host could be detected.'
           if User.current
             render_error 'access_denied',
-                         :status => :forbidden,
-                         :locals => {
-                           :details => 'You need to authenticate with a valid client cert. The DN has to match a known host.'
-                         }
+              :status => :forbidden,
+              :locals => {
+                :details => 'You need to authenticate with a valid client cert. The DN has to match a known host.',
+              }
           else
             render_error 'unauthorized',
-                         :status => :unauthorized,
-                         :locals => {
-                           :user_login => get_client_cert_hostname
-                         }
+              :status => :unauthorized,
+              :locals => {
+                :user_login => get_client_cert_hostname,
+              }
           end
         end
         true
@@ -163,7 +166,7 @@ module Api
           deny_access
         else
           render_error 'precondition_failed', :status => :precondition_failed, :locals => {
-            :message => 'Precondition failed. Lock is in invalid state for this operation.'
+            :message => 'Precondition failed. Lock is in invalid state for this operation.',
           }
         end
       end

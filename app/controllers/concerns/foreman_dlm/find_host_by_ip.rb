@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ForemanDlm
   module FindHostByIp
     extend ActiveSupport::Concern

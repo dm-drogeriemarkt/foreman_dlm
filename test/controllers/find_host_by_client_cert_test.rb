@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_plugin_helper'
 
 class FindHostByClientCertTest < ActionController::TestCase
@@ -62,7 +64,7 @@ class FindHostByClientCertTest < ActionController::TestCase
 
         get :index
 
-        assert_equal false, @controller.send(:require_client_cert_or_login)
+        assert_not @controller.send(:require_client_cert_or_login)
         assert_nil @controller.detected_host
       end
 
@@ -73,7 +75,7 @@ class FindHostByClientCertTest < ActionController::TestCase
 
         get :index
 
-        assert_equal false, @controller.send(:require_client_cert_or_login)
+        assert_not @controller.send(:require_client_cert_or_login)
         assert_nil @controller.detected_host
       end
 
@@ -83,7 +85,7 @@ class FindHostByClientCertTest < ActionController::TestCase
 
         get :index
 
-        assert_equal false, @controller.send(:require_client_cert_or_login)
+        assert_not @controller.send(:require_client_cert_or_login)
         assert_nil @controller.detected_host
       end
     end

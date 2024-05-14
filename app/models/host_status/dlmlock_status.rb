@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HostStatus
   class DlmlockStatus < Status
     OK = 0

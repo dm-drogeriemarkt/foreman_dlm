@@ -1,22 +1,6 @@
-inherit_from: .rubocop_todo.yml
-
-require:
-  - rubocop-rails
-  - rubocop-performance
-
-AllCops:
-  TargetRubyVersion: 2.7
-  TargetRailsVersion: 5.1
-  NewCops: enable
-  Exclude:
-    - '*.spec'
-    - 'Rakefile'
-    - 'extras/**/*'
-    - 'locale/**/*'
-    - 'node_modules/**/*'
-    - 'vendor/bundle/**/*'
-Rails:
-  Enabled: true
+inherit_gem:
+  theforeman-rubocop:
+    - default.yml
 
 # Don't enforce documentation
 Style/Documentation:
