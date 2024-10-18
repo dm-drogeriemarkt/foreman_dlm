@@ -1,6 +1,6 @@
 # Foreman Distributed Lock Manager
 
-[<img src="https://opensourcelogos.aws.dmtech.cloud/dmTECH_opensource_logo%401x.svg" height="21" width="130">](https://www.dmtech.de/)
+[<img src="https://raw.githubusercontent.com/dm-drogeriemarkt/.github/refs/heads/main/assets/dmtech-open-source-badge.svg">](https://www.dmtech.de/)
 
 This is a plugin for Foreman that allows Foreman to act as a distributed lock manager.
 Updates are key to security, but updates of an operating system are hard to apply and existing tools are hard to manage at scale. This might lead to a large drift between important security updates becoming available and all your hosts being successfully patched. Security experts recommend to install updates as soon as they come available. The ability to easily update software is the most effective way to improve server security. Automation is key to ensure this goal is reached.
