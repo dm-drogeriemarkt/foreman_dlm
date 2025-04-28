@@ -22,7 +22,12 @@ class DlmlocksTest < IntegrationTestWithJavascript
     search_bar.first('input').set('ho')
 
     autocomplete_list = page.first('div[data-ouia-component-id="search-autocomplete-menu"]')
-    list = autocomplete_list.find_all('span.pf-c-menu__item-text').map(&:text)
+    version = Foreman::Version.new
+    list = if version.major.to_i == 3 && version.minor.to_i <= 14
+             autocomplete_list.find_all('span.pf-c-menu__item-text').map(&:text)
+           else
+             autocomplete_list.find_all('span.pf-v5-c-menu__item-text').map(&:text)
+           end
 
     assert_includes list, 'host'
   end

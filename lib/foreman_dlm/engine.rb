@@ -4,10 +4,6 @@ module ForemanDlm
   class Engine < ::Rails::Engine
     engine_name 'foreman_dlm'
 
-    config.autoload_paths += Dir["#{config.root}/app/controllers/concerns"]
-    config.autoload_paths += Dir["#{config.root}/app/models/concerns"]
-    config.autoload_paths += Dir["#{config.root}/app/jobs"]
-
     # Add any db migrations
     initializer 'foreman_dlm.load_app_instance_data' do |app|
       ForemanDlm::Engine.paths['db/migrate'].existent.each do |path|
@@ -15,77 +11,79 @@ module ForemanDlm
       end
     end
 
-    initializer 'foreman_dlm.register_plugin', :before => :finisher_hook do |_app|
-      Foreman::Plugin.register :foreman_dlm do
-        requires_foreman '>= 3.9'
+    initializer 'foreman_dlm.register_plugin', :before => :finisher_hook do |app|
+      app.reloader.to_prepare do
+        Foreman::Plugin.register :foreman_dlm do
+          requires_foreman '>= 3.13'
 
-        apipie_documented_controllers ["#{ForemanDlm::Engine.root}/app/controllers/api/v2/*.rb"]
+          apipie_documented_controllers ["#{ForemanDlm::Engine.root}/app/controllers/api/v2/*.rb"]
 
-        settings do
-          category(:general) do
-            setting('dlm_stale_time',
-              type: :integer,
-              default: 4,
-              description: N_('Number of hours after which locked Distributed Lock is stale'),
-              full_name: N_('Distributed Lock stale time'),
-              validate: { numericality: { greater_than: 0 } })
+          settings do
+            category(:general) do
+              setting('dlm_stale_time',
+                type: :integer,
+                default: 4,
+                description: N_('Number of hours after which locked Distributed Lock is stale'),
+                full_name: N_('Distributed Lock stale time'),
+                validate: { numericality: { greater_than: 0 } })
+            end
           end
-        end
 
-        # Add permissions
-        security_block :foreman_dlm do
-          permission :view_dlmlocks, {
-            :'foreman_dlm/dlmlocks' => [:index, :show, :auto_complete_search],
-            :'api/v2/dlmlocks' => [:index, :show],
-          }, :resource_type => 'ForemanDlm::Dlmlock'
+          # Add permissions
+          security_block :foreman_dlm do
+            permission :view_dlmlocks, {
+              :'foreman_dlm/dlmlocks' => [:index, :show, :auto_complete_search],
+              :'api/v2/dlmlocks' => [:index, :show],
+            }, :resource_type => 'ForemanDlm::Dlmlock'
 
-          permission :create_dlmlocks, {
-            :'api/v2/dlmlocks' => [:create],
-          }, :resource_type => 'ForemanDlm::Dlmlock'
+            permission :create_dlmlocks, {
+              :'api/v2/dlmlocks' => [:create],
+            }, :resource_type => 'ForemanDlm::Dlmlock'
 
-          permission :edit_dlmlocks, {
-            :'foreman_dlm/dlmlocks' => [:release, :enable, :disable],
-            :'api/v2/dlmlocks' => [:update, :acquire, :release],
-          }, :resource_type => 'ForemanDlm::Dlmlock'
+            permission :edit_dlmlocks, {
+              :'foreman_dlm/dlmlocks' => [:release, :enable, :disable],
+              :'api/v2/dlmlocks' => [:update, :acquire, :release],
+            }, :resource_type => 'ForemanDlm::Dlmlock'
 
-          permission :destroy_dlmlocks, {
-            :'foreman_dlm/dlmlocks' => [:destroy],
-            :'api/v2/dlmlocks' => [:destroy],
-          }, :resource_type => 'ForemanDlm::Dlmlock'
+            permission :destroy_dlmlocks, {
+              :'foreman_dlm/dlmlocks' => [:destroy],
+              :'api/v2/dlmlocks' => [:destroy],
+            }, :resource_type => 'ForemanDlm::Dlmlock'
 
-          permission :view_dlmlock_events, {
-            :'api/v2/dlmlock_events' => [:index],
-          }, :resource_type => 'ForemanDlm::DlmlockEvent'
-        end
+            permission :view_dlmlock_events, {
+              :'api/v2/dlmlock_events' => [:index],
+            }, :resource_type => 'ForemanDlm::DlmlockEvent'
+          end
 
-        # Add a new role called 'Distributed Lock Manager' if it doesn't exist
-        role 'Distributed Lock Manager', [:view_dlmlocks,
-                                          :create_dlmlocks,
-                                          :edit_dlmlocks,
-                                          :destroy_dlmlocks,
-                                          :view_dlmlock_events],
-          'Role granting full access permissions to distributed locks'
+          # Add a new role called 'Distributed Lock Manager' if it doesn't exist
+          role 'Distributed Lock Manager', [:view_dlmlocks,
+                                            :create_dlmlocks,
+                                            :edit_dlmlocks,
+                                            :destroy_dlmlocks,
+                                            :view_dlmlock_events],
+            'Role granting full access permissions to distributed locks'
 
-        # add menu entry
-        menu :top_menu, :foreman_dlm_dlmlocks,
-          url_hash: { controller: :'foreman_dlm/dlmlocks', action: :index },
-          caption: N_('Distributed Locks'),
-          parent: :monitor_menu,
-          after: :audits
+          # add menu entry
+          menu :top_menu, :foreman_dlm_dlmlocks,
+            url_hash: { controller: :'foreman_dlm/dlmlocks', action: :index },
+            caption: N_('Distributed Locks'),
+            parent: :monitor_menu,
+            after: :audits
 
-        # Dlm Facet
-        register_facet(ForemanDlm::DlmFacet, :dlm_facet) do
-          api_view list: 'foreman_dlm/api/v2/dlm_facets/base_with_root', single: 'foreman_dlm/api/v2/dlm_facets/show'
-        end
+          # Dlm Facet
+          register_facet(ForemanDlm::DlmFacet, :dlm_facet) do
+            api_view list: 'foreman_dlm/api/v2/dlm_facets/base_with_root', single: 'foreman_dlm/api/v2/dlm_facets/show'
+          end
 
-        register_custom_status HostStatus::DlmlockStatus
+          register_custom_status HostStatus::DlmlockStatus
 
-        # extend host show page
-        extend_page('hosts/show') do |context|
-          context.add_pagelet :main_tabs,
-            :name => N_('Locks'),
-            :partial => 'hosts/dlmlocks_tab',
-            :onlyif => proc { |host| host.dlm_facet }
+          # extend host show page
+          extend_page('hosts/show') do |context|
+            context.add_pagelet :main_tabs,
+              :name => N_('Locks'),
+              :partial => 'hosts/dlmlocks_tab',
+              :onlyif => proc { |host| host.dlm_facet }
+          end
         end
       end
     end
