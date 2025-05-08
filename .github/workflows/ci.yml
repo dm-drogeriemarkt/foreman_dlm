@@ -26,9 +26,11 @@ jobs:
           - "develop"
           - "3.14-stable"
           - "3.13-stable"
-    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    uses: ./.github/workflows/foreman_plugin.yml
     with:
       plugin: foreman_dlm
       foreman_version: ${{ matrix.foreman }}
       environment_variables: |
         FOREMAN_VERSION=${{ matrix.foreman }}
+        ADDITIONAL_CHROME_OPTIONS=--remote-debugging-pipe;--no-sandbox
+        TESTOPTS=--verbose
