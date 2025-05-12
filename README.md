@@ -16,6 +16,7 @@ With this plugin servers can acquire a lock in Foreman to ensure only one server
 | >= 1.17         | ~> 1.0         |
 | >= 3.0          | ~> 2.0         |
 | >= 3.9          | ~> 3.0         |
+| >= 3.13         | ~> 4.0         |
 
 ## Installation
 
